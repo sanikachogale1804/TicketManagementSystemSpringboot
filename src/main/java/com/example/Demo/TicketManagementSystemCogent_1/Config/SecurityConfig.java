@@ -1,4 +1,6 @@
- package com.example.Demo.TicketManagementSystemCogent_1.Config;
+package com.example.Demo.TicketManagementSystemCogent_1.Config;
+
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,23 +24,23 @@ public class SecurityConfig {
 
     @Autowired
     private UserDetailsService userDetailsService;
-    
+
     @Autowired
     private JWTFilter jwtFilter; // Assuming JWTFilter is the class that checks JWT token
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .csrf(csrf -> csrf.disable()) // Disable CSRF as you're using JWT
-            .cors(Customizer.withDefaults()) // Enable CORS support in Spring Security
+            .csrf(csrf -> csrf.disable()) // Disable CSRF since you are using JWT
             .authorizeRequests(authz -> authz
-                .requestMatchers("/register", "/login").permitAll() // Allow access to register and login
-                .requestMatchers("/users", "/tickets").permitAll()  // Allow access to users and tickets endpoints
-                .anyRequest().authenticated() // Require authentication for other endpoints
+                .requestMatchers("/register", "/login").permitAll()  // Allow everyone to access register/login
+                .requestMatchers("/admin/**").hasRole("ADMIN")  // Only ADMIN can access /admin/**
+                .requestMatchers("/user/**").hasRole("USER")  // Only USER can access /user/**
+                .anyRequest().authenticated()  // Require authentication for other endpoints
             )
-            .httpBasic(Customizer.withDefaults()) // Basic HTTP authentication can be used for debugging
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session management
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter before UsernamePasswordAuthenticationFilter
+            .httpBasic(Customizer.withDefaults())  // Basic authentication for debugging
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless session
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)  // Add JWT filter
             .build();
     }
 

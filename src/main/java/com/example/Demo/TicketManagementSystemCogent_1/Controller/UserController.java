@@ -22,13 +22,14 @@ public class UserController {
 	}
 	
 	@CrossOrigin(origins = "http://localhost:3000")  // Allow requests from React frontend
-	@PostMapping("/login")
-	public String login(@RequestBody User user) {
-	    String token = service.verify(user);
-	    if (token.equals("fail")) {
-	        return "Authentication failed";  // Or return a more descriptive error
-	    }
-	    return token;  // Return the JWT token if login is successful
-	}
+	 @PostMapping("/login")
+    public String login(@RequestBody User user) {
+        // Login method to authenticate and generate JWT token based on user roles
+        String token = service.login(user);
+        if (token.equals("fail")) {
+            return "Authentication failed";  // If authentication fails, return error
+        }
+        return token;  // If login is successful, return the JWT token with roles
+    }
 
 }

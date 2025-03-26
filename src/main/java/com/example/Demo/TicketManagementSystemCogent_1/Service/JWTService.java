@@ -5,7 +5,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import javax.crypto.KeyGenerator;
@@ -16,12 +18,13 @@ import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JWTService {
-    
+
     private String secretKey;
 
     public JWTService() {
@@ -35,7 +38,17 @@ public class JWTService {
         }
     }
 
-    // Generate JWT token
+    public String generateTokenWithRoles(String username, Set<String> roles) {
+        return Jwts.builder()
+                .setSubject(username) // Set username as subject
+                .claim("roles", roles)  // Add roles as claim
+                .setIssuedAt(new Date()) // Set issue date
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))  // Token expiration time (1 day)
+                .signWith(SignatureAlgorithm.HS512, secretKey)  // Use HS512 with secret key for signing
+                .compact();  // Generate the token
+    }
+    
+    // Generate JWT token (without roles)
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
@@ -96,5 +109,9 @@ public class JWTService {
     // Extract expiration date from the token
     private Date extractExpiration(String token) {
         return extractClaims(token, Claims::getExpiration);
+    }
+
+    public List<String> extractRoles(String token) {
+        return extractClaims(token, claims -> (List<String>) claims.get("roles"));  // Extract roles from token claims
     }
 }
