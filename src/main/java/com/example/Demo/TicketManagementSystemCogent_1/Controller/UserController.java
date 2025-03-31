@@ -25,7 +25,8 @@ public class UserController {
 	 @PostMapping("/login")
     public String login(@RequestBody User user) {
         // Login method to authenticate and generate JWT token based on user roles
-        String token = service.login(user);
+//		String token=service.login(user);
+		String token = service.verify(user);
         if (token.equals("fail")) {
             return "Authentication failed";  // If authentication fails, return error
         }

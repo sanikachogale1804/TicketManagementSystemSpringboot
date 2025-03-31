@@ -28,15 +28,16 @@ public class TicketController {
 	 @Autowired
 	    private TicketRepository ticketRepository;
 
-	 @GetMapping("/tickets/{id}")
-	 public ResponseEntity<Ticket> getTicketById(@PathVariable int id) {
-	     Ticket ticket = ticketRepository.findById(id).orElse(null);
+	 @GetMapping("{ticketId}")
+	 public ResponseEntity<Ticket> getTicketById(@PathVariable int ticketId) {
+	     Ticket ticket = ticketRepository.findById(ticketId).orElse(null);
 	     if (ticket != null) {
 	         return ResponseEntity.ok(ticket);
 	     } else {
 	         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	     }
 	 }
+	 
 
 	    
 }
