@@ -19,7 +19,7 @@ public class Ticket {
     private int ticketId;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "userId", nullable = false)
+    @JoinColumn(name="user_id",referencedColumnName = "userId", nullable = true)
     private User customer;  // Customer who created the ticket
     
     @ManyToOne

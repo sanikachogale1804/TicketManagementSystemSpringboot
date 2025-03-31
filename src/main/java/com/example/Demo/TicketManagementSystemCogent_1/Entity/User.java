@@ -32,7 +32,7 @@ public class User {
     private String userEmail;
     
     @OneToMany(mappedBy = "assignedTo")
-    private List<Ticket> assignedTickets; // List of tickets assigned to this user
+    private List<Ticket> assignedTickets;
     
     // Enum for User Role
     public enum Role {
