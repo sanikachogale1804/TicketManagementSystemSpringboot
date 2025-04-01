@@ -33,11 +33,11 @@ public class SecurityConfig {
         return http
             .csrf(csrf -> csrf.disable()) // Disable CSRF since you are using JWT
             .authorizeRequests(authz -> authz
-            	    .requestMatchers("/register", "/login").permitAll()
-            	    .requestMatchers("/users", "/tickets").permitAll()
-            	    .requestMatchers("/tickets/**").permitAll() // Allow all ticket-related endpoints
-            	    .requestMatchers("/admin/**").hasRole("ADMIN")  
-            	    .requestMatchers("/user/**").hasRole("USER")  
+            		.requestMatchers("/register", "/login").permitAll()
+             	    .requestMatchers("/users", "/tickets").permitAll()
+             	    .requestMatchers("/tickets/**").permitAll() // Allow all ticket-related endpoints
+             	    .requestMatchers("/admin/**").hasRole("ADMIN")  
+             	    .requestMatchers("/user/**").hasRole("USER") 
             	    .anyRequest().authenticated()
             	)
             .httpBasic(Customizer.withDefaults())  // Basic authentication for debugging
