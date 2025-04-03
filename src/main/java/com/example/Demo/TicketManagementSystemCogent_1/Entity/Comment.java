@@ -24,11 +24,11 @@ public class Comment {
 	private int commentId;
 	
 	@ManyToOne
-    @JoinColumn(referencedColumnName = "ticketId", nullable = false)
+    @JoinColumn(referencedColumnName = "ticketId", nullable = true)
 	private Ticket ticket;
 	
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "userId", nullable = false)
+	@JoinColumn(referencedColumnName = "userId", nullable = true)
 	private User user; 
 	
 	@Column(nullable = false, columnDefinition = "TEXT")

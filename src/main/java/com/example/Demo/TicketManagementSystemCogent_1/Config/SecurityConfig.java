@@ -1,7 +1,5 @@
 package com.example.Demo.TicketManagementSystemCogent_1.Config;
 
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,10 +32,13 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Disable CSRF since you are using JWT
             .authorizeRequests(authz -> authz
             		.requestMatchers("/register", "/login").permitAll()
-             	    .requestMatchers("/users", "/tickets").permitAll()
-             	    .requestMatchers("/tickets/**").permitAll() // Allow all ticket-related endpoints
-             	    .requestMatchers("/admin/**").hasRole("ADMIN")  
-             	    .requestMatchers("/user/**").hasRole("USER") 
+                    .requestMatchers("/auth/me").permitAll()  // ✅ Auth API ko public access do
+                    .requestMatchers("/users", "/tickets").permitAll()
+                    .requestMatchers("/tickets/**").permitAll()
+                    .requestMatchers("/users/**").permitAll()
+                    .requestMatchers("/comments/**").permitAll()
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/user/**").hasRole("USER")
             	    .anyRequest().authenticated()
             	)
             .httpBasic(Customizer.withDefaults())  // Basic authentication for debugging

@@ -40,25 +40,30 @@ public class JWTService {
 
     public String generateTokenWithRoles(String username, Set<String> roles) {
         return Jwts.builder()
-                .setSubject(username) // Set username as subject
-                .claim("roles", roles)  // Add roles as claim
-                .setIssuedAt(new Date()) // Set issue date
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000))  // Token expiration time (1 day)
-                .signWith(SignatureAlgorithm.HS512, secretKey)  // Use HS512 with secret key for signing
-                .compact();  // Generate the token
+                .setSubject(username) // ✅ Username as subject
+                .claim("roles", String.join(",", roles))  // 🔹 Set ko String me convert karo (comma-separated)
+                .setIssuedAt(new Date()) // ✅ Issue Date
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))  // ✅ Expiry: 1 day
+                .signWith(getKey(), SignatureAlgorithm.HS512)  // ✅ Correct signing method
+                .compact();  // ✅ Generate token
     }
+
     
     // Generate JWT token (without roles)
-    public String generateToken(String username) {
+    public String generateToken(String username, Set<String> roles) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", String.join(",", roles));  // ✅ Roles ko JWT me include karo
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 1 hour expiration time
+                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // ✅ Expiry time (1 Hour)
                 .signWith(getKey())
                 .compact();
     }
+
+
 
     // Generate the SecretKey from the encoded secret key
     private SecretKey getKey() {
@@ -112,6 +117,8 @@ public class JWTService {
     }
 
     public List<String> extractRoles(String token) {
-        return extractClaims(token, claims -> (List<String>) claims.get("roles"));  // Extract roles from token claims
+        String rolesStr = extractClaims(token, claims -> (String) claims.get("roles"));  
+        return List.of(rolesStr.split(","));  // ✅ Comma-separated roles ko List me convert karo
     }
+
 }

@@ -33,16 +33,27 @@ public class UserService {
 	}
 
 	public String verify(User user) {
-		// Verify user credentials
-		Authentication authentication = 
-				authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword()));
+	    Authentication authentication = authManager.authenticate(
+	        new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword())
+	    );
 
-		// If authentication is successful, generate a JWT token
-		if(authentication.isAuthenticated()) {
-			return jwtService.generateToken(user.getUserName());  // Generating the JWT token
-		}
-		return "fail";  // Return "fail" if authentication fails
+	    if (authentication.isAuthenticated()) {
+	        User dbUser = repo.findByUserName(user.getUserName()).orElse(null);
+	        if (dbUser == null) {
+	            return "fail";
+	        }
+
+	        Set<String> roles = Set.of(dbUser.getRole().name());  // ✅ Role extract karo
+
+	        // ✅ Updated method call karo
+	        String token = jwtService.generateToken(dbUser.getUserName(), roles);
+
+	        System.out.println("🔹 Generated JWT Token: " + token);
+	        return token;
+	    }
+	    return "fail";
 	}
+
 	
 	public String login(User user) {
 	    // Verify user credentials

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -41,6 +42,9 @@ public class Ticket {
     
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+    
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments; 
 
     public enum Status {
         OPEN,
