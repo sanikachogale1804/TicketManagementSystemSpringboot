@@ -50,19 +50,19 @@ public class JWTService {
 
     
     // Generate JWT token (without roles)
-    public String generateToken(String username, Set<String> roles) {
+    public String generateToken(String username, int userId, Set<String> roles) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", String.join(",", roles));  // ✅ Roles ko JWT me include karo
+        claims.put("sub", username);
+        claims.put("id", userId);  // ✅ Now using int userId
+        claims.put("roles", String.join(",", roles));
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // ✅ Expiry time (1 Hour)
+                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 1 Hour Expiry
                 .signWith(getKey())
                 .compact();
     }
-
 
 
     // Generate the SecretKey from the encoded secret key
