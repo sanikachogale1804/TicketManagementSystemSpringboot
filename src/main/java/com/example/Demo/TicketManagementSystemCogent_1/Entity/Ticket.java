@@ -43,6 +43,12 @@ public class Ticket {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
     
+    @Column
+    private LocalDateTime startDate; 
+
+    @Column
+    private LocalDateTime endDate;
+    
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments; 
 

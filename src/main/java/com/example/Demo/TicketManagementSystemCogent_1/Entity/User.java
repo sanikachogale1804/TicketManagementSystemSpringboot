@@ -1,6 +1,9 @@
 package com.example.Demo.TicketManagementSystemCogent_1.Entity;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -31,7 +34,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String userEmail;
     
-    @OneToMany(mappedBy = "assignedTo")
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("assignedTo")  
     private List<Ticket> assignedTickets;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
