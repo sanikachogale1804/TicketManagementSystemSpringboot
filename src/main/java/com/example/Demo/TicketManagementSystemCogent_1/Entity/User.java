@@ -34,8 +34,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String userEmail;
     
-    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("assignedTo")  
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL) 
     private List<Ticket> assignedTickets;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

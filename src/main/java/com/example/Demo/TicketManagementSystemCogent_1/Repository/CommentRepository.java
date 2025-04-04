@@ -11,6 +11,6 @@ import com.example.Demo.TicketManagementSystemCogent_1.Entity.Comment;
 @CrossOrigin
 public interface CommentRepository extends JpaRepository<Comment, Integer>{
 	
-	 List<Comment> findByTicketTicketId(int ticketId);  // ✅ Find Comments by Ticket ID
+	 List<Comment> findByTicket_TicketId(int ticketId);
 
 }
