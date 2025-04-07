@@ -2,6 +2,9 @@ package com.example.Demo.TicketManagementSystemCogent_1.Entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,10 +28,12 @@ public class Comment {
 	
 	@ManyToOne
     @JoinColumn(referencedColumnName = "ticketId", nullable = true)
+	@JsonBackReference
 	private Ticket ticket;
 	
 	@ManyToOne
 	@JoinColumn(referencedColumnName = "userId", nullable = true)
+	@JsonManagedReference
 	private User user; 
 	
 	@Column(nullable = false, columnDefinition = "TEXT")

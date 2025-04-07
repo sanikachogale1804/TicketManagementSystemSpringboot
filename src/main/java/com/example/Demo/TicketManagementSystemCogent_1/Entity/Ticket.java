@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Data
 @AllArgsConstructor
@@ -27,6 +28,7 @@ public class Ticket {
     
     @ManyToOne
     @JoinColumn(name = "assigned_to", referencedColumnName = "userId", nullable = true)
+    @JsonManagedReference
     private User assignedTo;  // User to whom the ticket is assigned
     
     @Column(nullable = false)
@@ -52,6 +54,7 @@ public class Ticket {
     private LocalDateTime endDate;
     
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Comment> comments; 
 
     public enum Status {
