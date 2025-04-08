@@ -2,7 +2,6 @@ package com.example.Demo.TicketManagementSystemCogent_1.Entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
@@ -36,11 +35,9 @@ public class User {
     private String userEmail;
     
     @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL) 
-    @JsonBackReference
     private List<Ticket> assignedTickets;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
     private List<Comment> comments; 
     
     // Enum for User Role

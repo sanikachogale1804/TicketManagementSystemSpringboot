@@ -16,6 +16,9 @@ import javax.crypto.SecretKey;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.example.Demo.TicketManagementSystemCogent_1.DTO.UserTokenDTO;
+import com.example.Demo.TicketManagementSystemCogent_1.Entity.User;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -49,22 +52,30 @@ public class JWTService {
     }
 
     
-    // Generate JWT token (without roles)
-    public String generateToken(String username, int userId, Set<String> roles) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("sub", username);
-        claims.put("id", userId);  // ✅ Now using int userId
-        claims.put("roles", String.join(",", roles));
+ // Generate JWT token (without roles)
+    public String generateToken(User user) {
+        // Create a simplified DTO instead of passing the whole User entity
+        UserTokenDTO userTokenDTO = new UserTokenDTO(user.getUserId(), user.getUserName(), user.getRole().toString());
 
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 1 Hour Expiry
-                .signWith(getKey())
-                .compact();
+        // Generate JWT token based on this simplified DTO
+        String token = generateToken(userTokenDTO);  // Use the DTO to generate token
+        return token;
     }
 
+    public String generateToken(UserTokenDTO userTokenDTO) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", userTokenDTO.getUserName());
+        claims.put("id", userTokenDTO.getUserId());
+        claims.put("roles", userTokenDTO.getRole()); // Ensure this is correctly passed as a string
 
+        return Jwts.builder()
+                .setClaims(claims) // Set claims
+                .setIssuedAt(new Date(System.currentTimeMillis())) // Set the issue time
+                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // Set expiration time (1 hour)
+                .signWith(getKey(), SignatureAlgorithm.HS256) // Sign with secret key
+                .compact(); // Return compact JWT token
+    }
+   
     // Generate the SecretKey from the encoded secret key
     private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);

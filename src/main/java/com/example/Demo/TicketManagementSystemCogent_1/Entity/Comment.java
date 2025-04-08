@@ -28,12 +28,12 @@ public class Comment {
 	
 	@ManyToOne
     @JoinColumn(referencedColumnName = "ticketId", nullable = true)
-	@JsonBackReference
+//	@JsonBackReference
 	private Ticket ticket;
 	
 	@ManyToOne
 	@JoinColumn(referencedColumnName = "userId", nullable = true)
-	@JsonManagedReference
+//	@JsonManagedReference
 	private User user; 
 	
 	@Column(nullable = false, columnDefinition = "TEXT")
