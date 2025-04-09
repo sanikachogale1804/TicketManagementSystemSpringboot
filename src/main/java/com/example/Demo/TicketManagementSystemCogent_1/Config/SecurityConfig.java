@@ -33,7 +33,7 @@ public class SecurityConfig {
             .authorizeRequests(authz -> authz
                     .requestMatchers("/register", "/login").permitAll() // Allow register and login endpoints
                     .requestMatchers("/auth/me").permitAll()  // ✅ Auth API public access
-                    .requestMatchers("/users", "/tickets").permitAll() // Allow users and tickets endpoints without authentication
+                    .requestMatchers("/users", "/tickets","/comments").permitAll() // Allow users and tickets endpoints without authentication
                     .requestMatchers("/tickets/**").permitAll() // Allow specific ticket endpoints
                     .requestMatchers("/users/**").permitAll() // Allow specific user endpoints
                     .requestMatchers("/comments/**").permitAll() // Allow specific comment endpoints

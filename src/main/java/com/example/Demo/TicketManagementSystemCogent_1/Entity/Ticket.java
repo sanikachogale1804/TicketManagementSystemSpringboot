@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Data
 @AllArgsConstructor
@@ -30,19 +31,24 @@ public class Ticket {
     private User assignedTo;  // User to whom the ticket is assigned
     
     @Column(nullable = false)
-    private String title;
+    private String IASSPName;
+    
+    @Column(nullable = false)
+    private String SiteID;
     
     @Column(nullable = false)
     private String description;
     
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Status status;
     
     @Column(nullable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
     
     @Column(nullable = false)
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
     
     @Column
@@ -51,7 +57,7 @@ public class Ticket {
     @Column
     private LocalDateTime endDate;
     
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ticket")
     private List<Comment> comments; 
 
     public enum Status {
