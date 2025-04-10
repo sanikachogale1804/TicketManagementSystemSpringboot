@@ -4,8 +4,7 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,12 +28,15 @@ public class Comment {
 	private int commentId;
 	
 	@ManyToOne
-    @JoinColumn(referencedColumnName = "ticketId",name = "ticket_id")
+	@JoinColumn(referencedColumnName = "ticketId", name = "ticket_id")
+	@JsonIgnoreProperties("comments") // prevents loop
 	private Ticket ticket;
+
 	
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "userId",name = "user_id")
-	private User user; 
+	@JoinColumn(referencedColumnName = "userId", name = "user_id")
+	@JsonIgnoreProperties("comments") // prevents loop
+	private User user;
 	
 	@Column( columnDefinition = "TEXT")
 	private String comment;
@@ -42,5 +44,6 @@ public class Comment {
 	@Column(nullable = true)
 	@CreationTimestamp
     private LocalDateTime createdAt;
+
 
 }

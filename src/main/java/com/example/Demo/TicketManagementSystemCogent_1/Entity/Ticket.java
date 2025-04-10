@@ -57,8 +57,8 @@ public class Ticket {
     @Column
     private LocalDateTime endDate;
     
-    @OneToMany(mappedBy = "ticket")
-    private List<Comment> comments; 
+//    @OneToMany(mappedBy = "ticket")
+//    private List<Comment> comments; 
 
     public enum Status {
         OPEN,

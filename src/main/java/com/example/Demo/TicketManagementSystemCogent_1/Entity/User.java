@@ -37,8 +37,8 @@ public class User {
     @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL) 
     private List<Ticket> assignedTickets;
     
-    @OneToMany(mappedBy = "user")
-    private List<Comment> comments; 
+//    @OneToMany(mappedBy = "user")
+//    private List<Comment> comments; 
     
     // Enum for User Role
     public enum Role {
