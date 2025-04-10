@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,8 +32,14 @@ public class Comment {
 	@JoinColumn(referencedColumnName = "ticketId", name = "ticket_id")
 	@JsonIgnoreProperties("comments") // prevents loop
 	private Ticket ticket;
-
 	
+	@JsonProperty("ticketId")
+	public Integer getTicketIdForJson() {
+	    return ticket != null ? ticket.getTicketId() : null;
+	}
+
+
+	  
 	@ManyToOne
 	@JoinColumn(referencedColumnName = "userId", name = "user_id")
 	@JsonIgnoreProperties("comments") // prevents loop

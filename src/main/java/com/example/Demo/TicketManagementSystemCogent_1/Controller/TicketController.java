@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Demo.TicketManagementSystemCogent_1.Service.TicketService;
 
-@CrossOrigin(origins = "http://localhost:3000")  // React App के लिए CORS allow करें
+@CrossOrigin(origins = {
+	    "http://localhost:3000",
+	    "http://45.115.186.228:3000"
+	})
 @RestController
 @RequestMapping("/tickets")
 public class TicketController {
