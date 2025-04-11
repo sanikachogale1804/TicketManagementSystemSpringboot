@@ -37,8 +37,6 @@ public class Comment {
 	public Integer getTicketIdForJson() {
 	    return ticket != null ? ticket.getTicketId() : null;
 	}
-
-
 	  
 	@ManyToOne
 	@JoinColumn(referencedColumnName = "userId", name = "user_id")
