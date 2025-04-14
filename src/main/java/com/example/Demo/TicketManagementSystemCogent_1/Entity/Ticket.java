@@ -59,7 +59,6 @@ public class Ticket {
     
     @OneToMany(mappedBy = "ticket")
     private List<Comment> comments; 
-    
 
 
     public enum Status {
