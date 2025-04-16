@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**") // Apply CORS settings to all endpoints
         .allowedOrigins(
                 "http://localhost:3000",
-                "http://45.115.186.228:3000"
+                "https://silver-unicorn-fb39cf.netlify.app/"
             )
             .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS") // Allowed HTTP methods
             .allowedHeaders("Authorization", "Content-Type", "Accept") // Allowed headers (added Accept header)

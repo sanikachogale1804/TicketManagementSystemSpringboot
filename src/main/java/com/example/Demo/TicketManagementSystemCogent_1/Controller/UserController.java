@@ -16,13 +16,19 @@ public class UserController {
 	@Autowired
 	private UserService service;
 
-	@CrossOrigin(origins = "http://localhost:3000")  // Allow requests from React frontend
+	@CrossOrigin(origins = {
+	        "http://localhost:3000",
+	        "https://silver-unicorn-fb39cf.netlify.app/"
+	    })  // Allow requests from React frontend
 	@PostMapping("/register")
 	public User register(@RequestBody User user) {
 		return service.register(user);
 	}
 	
-	@CrossOrigin(origins = "http://localhost:3000")  // Allow requests from React frontend
+	@CrossOrigin(origins = {
+	        "http://localhost:3000",
+	        "https://silver-unicorn-fb39cf.netlify.app/"
+	    })// Allow requests from React frontend
 	 @PostMapping("/login")
     public String login(@RequestBody User user) {
         // Login method to authenticate and generate JWT token based on user roles
