@@ -18,7 +18,7 @@ public class UserController {
 
 	@CrossOrigin(origins = {
 	        "http://localhost:3000",
-	        "https://silver-unicorn-fb39cf.netlify.app/"
+	        "https://creative-cascaron-a830b6.netlify.app"
 	    })  // Allow requests from React frontend
 	@PostMapping("/register")
 	public User register(@RequestBody User user) {
