@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.Demo.TicketManagementSystemCogent_1.Service.TicketService;
 
 @CrossOrigin(origins = {
-	    "http://localhost:3000",
-	    "https://creative-cascaron-a830b6.netlify.app"
+	    "http://localhost:3000"
 	})
 @RestController
 @RequestMapping("/tickets")
