@@ -1,9 +1,9 @@
 package com.example.Demo.TicketManagementSystemCogent_1.Service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import com.example.Demo.TicketManagementSystemCogent_1.Entity.CameraReport;
 import com.example.Demo.TicketManagementSystemCogent_1.Repository.CameraReportRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -103,6 +103,25 @@ public class CameraAnalysisService {
                 System.out.println("⚠️ No valid date folders found in: " + cameraFolder.getName());
             }
         }
+    }
+
+    public Map<String, Double> getStorageInfo(String basePath) {
+        File base = new File(basePath);
+        Map<String, Double> storageInfo = new HashMap<>();
+
+        if (!base.exists() || !base.isDirectory()) {
+            throw new IllegalArgumentException("Invalid base path: " + basePath);
+        }
+
+        double totalSpaceGB = base.getTotalSpace() / (1024.0 * 1024 * 1024);
+        double freeSpaceGB = base.getFreeSpace() / (1024.0 * 1024 * 1024);
+        double usedSpaceGB = totalSpaceGB - freeSpaceGB;
+
+        storageInfo.put("totalSpaceGB", totalSpaceGB);
+        storageInfo.put("usedSpaceGB", usedSpaceGB);
+        storageInfo.put("freeSpaceGB", freeSpaceGB);
+
+        return storageInfo;
     }
 
     private double folderSizeInGB(File folder) {

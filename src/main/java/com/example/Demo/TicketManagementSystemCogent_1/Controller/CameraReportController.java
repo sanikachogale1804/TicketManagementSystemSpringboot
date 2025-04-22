@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +39,12 @@ public class CameraReportController {
 	            return "Error occurred during analysis: " + e.getMessage();
 	        }
 	    }
+	    
+	    @GetMapping("/storage-info")
+	    public Map<String, Double> getStorageInfo() {
+	        return cameraAnalysisService.getStorageInfo("D:\\NAS1");
+	    }
+
 	    
 	    @GetMapping("/test-insert")
 	    public String insertDummy() {

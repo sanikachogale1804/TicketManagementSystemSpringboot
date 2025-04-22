@@ -32,14 +32,16 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Disable CSRF since you are using JWT
             .authorizeRequests(authz -> authz
                     .requestMatchers("/register", "/login").permitAll() // Allow register and login endpoints
-                    .requestMatchers("/auth/me").permitAll()  // ✅ Auth API public access
+                    .requestMatchers("/auth/me","/camera-reports").permitAll()  // ✅ Auth API public access
                     .requestMatchers("/users", "/tickets","/comments").permitAll() // Allow users and tickets endpoints without authentication
                     .requestMatchers("/tickets/**").permitAll() // Allow specific ticket endpoints
                     .requestMatchers("/users/**").permitAll() // Allow specific user endpoints
                     .requestMatchers("/comments/**").permitAll() // Allow specific comment endpoints
+                    .requestMatchers("/camera-reports/**").permitAll()
                     .requestMatchers("/admin/**").hasRole("ADMIN") // Only allow ADMIN role for admin endpoints
                     .requestMatchers("/user/**").hasRole("USER") // Only allow USER role for user endpoints
                     .requestMatchers("/team/**").hasRole("TEAMMEMBER") // Grant access to TEAMMEMBER role
+             
                     .anyRequest().authenticated() // Require authentication for other requests
                 )
             .httpBasic(Customizer.withDefaults())  // Basic authentication for debugging

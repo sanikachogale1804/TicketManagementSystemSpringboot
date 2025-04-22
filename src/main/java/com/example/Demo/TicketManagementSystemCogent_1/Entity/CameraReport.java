@@ -38,5 +38,15 @@ public class CameraReport {
 
 	 @Column(name = "date_issue")
 	 private int dateIssue;
+	
+	 @Column(name = "total_space_gb")
+	 private double totalSpaceGB;
 
+	 @Column(name = "used_space_gb")
+	 private double usedSpaceGB;
+
+	 @Column(name = "free_space_gb")
+	 private double freeSpaceGB;
+
+	 
 }
