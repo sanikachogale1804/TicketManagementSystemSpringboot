@@ -46,19 +46,19 @@ public class CameraReportController {
 	    }
 
 	    
-	    @GetMapping("/test-insert")
-	    public String insertDummy() {
-	        CameraReport r = CameraReport.builder()
-	                .cameraId("TEST-CAM-001")
-	                .startDate("01/01/2024")
-	                .endDate("01/02/2024")
-	                .recordingDays(2)
-	                .storageUsedGB(1.23)
-	                .dateIssue(0)
-	                .build();
-	        cameraReportRepository.save(r);
-	        return "Inserted test report!";
-	    }
+//	    @GetMapping("/test-insert")
+//	    public String insertDummy() {
+//	        CameraReport r = CameraReport.builder()
+//	                .cameraId("TEST-CAM-001")
+//	                .startDate("01/01/2024")
+//	                .endDate("01/02/2024")
+//	                .recordingDays(2)
+//	                .storageUsedGB(1.23)
+//	                .dateIssue(0)
+//	                .build();
+//	        cameraReportRepository.save(r);
+//	        return "Inserted test report!";
+//	    }
 	    
 	    @GetMapping("/create-folders")
 	    public String createCameraFolders() {

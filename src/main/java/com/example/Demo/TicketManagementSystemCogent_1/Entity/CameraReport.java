@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,13 +42,17 @@ public class CameraReport {
 	 private int dateIssue;
 	
 	 @Column(name = "total_space_gb")
-	 private double totalSpaceGB;
+	 private Double totalSpaceGB;
 
 	 @Column(name = "used_space_gb")
-	 private double usedSpaceGB;
+	 private Double usedSpaceGB;
 
 	 @Column(name = "free_space_gb")
-	 private double freeSpaceGB;
+	 private Double freeSpaceGB;
+	 
+	 @ManyToOne
+	 @JoinColumn(name = "site_master_id") // This column will store the foreign key
+	 private SiteMasterData siteMasterData;
 
 	 
 }
