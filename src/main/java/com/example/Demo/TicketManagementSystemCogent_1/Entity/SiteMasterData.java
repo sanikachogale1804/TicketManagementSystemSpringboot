@@ -10,9 +10,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,8 +31,7 @@ public class SiteMasterData {
 	 @Column(name = "site_live_date")
 	 private String siteLiveDate;
 
-	 @OneToMany(mappedBy = "siteMasterData", cascade = CascadeType.ALL)
+	 @OneToMany(mappedBy = "site", cascade = CascadeType.ALL)
 	 private List<CameraReport> cameraReports;
-	
 
 }

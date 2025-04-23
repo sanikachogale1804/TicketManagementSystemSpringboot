@@ -51,8 +51,11 @@ public class CameraReport {
 	 private Double freeSpaceGB;
 	 
 	 @ManyToOne
-	 @JoinColumn(name = "site_master_id") // This column will store the foreign key
-	 private SiteMasterData siteMasterData;
+	 @JoinColumn(name = "site_master_id",referencedColumnName = "id") // This column will be the foreign key to SiteMasterData
+	 private SiteMasterData site;
+	 
+	 
+
 
 	 
 }
