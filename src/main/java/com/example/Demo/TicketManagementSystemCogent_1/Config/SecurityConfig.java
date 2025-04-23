@@ -38,6 +38,7 @@ public class SecurityConfig {
                     .requestMatchers("/users/**").permitAll() // Allow specific user endpoints
                     .requestMatchers("/comments/**").permitAll() // Allow specific comment endpoints
                     .requestMatchers("/camera-reports/**").permitAll()
+                    .requestMatchers("/siteMasterData/**").permitAll()
                     .requestMatchers("/admin/**").hasRole("ADMIN") // Only allow ADMIN role for admin endpoints
                     .requestMatchers("/user/**").hasRole("USER") // Only allow USER role for user endpoints
                     .requestMatchers("/team/**").hasRole("TEAMMEMBER") // Grant access to TEAMMEMBER role

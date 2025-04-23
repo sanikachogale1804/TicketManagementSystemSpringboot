@@ -24,10 +24,10 @@ public class CameraReportController {
 	 private final CameraReportRepository cameraReportRepository;
 	 private final CameraAnalysisService cameraAnalysisService; 
 
-	    @GetMapping
-	    public List<CameraReport> getAllReports() {
-	        return cameraReportRepository.findAll();
-	    }
+//	    @GetMapping
+//	    public List<CameraReport> getAllReports() {
+//	        return cameraReportRepository.findAll();
+//	    }
 	    
 	    @GetMapping("/analyze")
 	    public String runAnalysis() {

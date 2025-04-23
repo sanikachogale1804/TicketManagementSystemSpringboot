@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.example.Demo.TicketManagementSystemCogent_1.Entity.CameraReport;
 
-@RepositoryRestResource(path = "cameraRestRepository")
+@RepositoryRestResource(path = "camera-reports")
 @CrossOrigin
 public interface CameraReportRepository extends JpaRepository<CameraReport, Long>{
 	

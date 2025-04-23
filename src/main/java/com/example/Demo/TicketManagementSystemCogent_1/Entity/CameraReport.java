@@ -55,7 +55,4 @@ public class CameraReport {
 	 private SiteMasterData site;
 	 
 	 
-
-
-	 
 }
