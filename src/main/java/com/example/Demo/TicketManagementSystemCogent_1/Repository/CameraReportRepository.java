@@ -12,5 +12,6 @@ public interface CameraReportRepository extends JpaRepository<CameraReport, Long
 	
 	void deleteByCameraId(String cameraId);
 
+	CameraReport findByCameraId(String cameraId);
 
 }

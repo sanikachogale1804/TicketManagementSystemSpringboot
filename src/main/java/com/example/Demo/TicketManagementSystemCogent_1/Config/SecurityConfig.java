@@ -20,47 +20,44 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+	 @Autowired
+	    private UserDetailsService userDetailsService;
 
-    @Autowired
-    private JWTFilter jwtFilter; // Assuming JWTFilter is the class that checks JWT token
+	    @Autowired
+	    private JWTFilter jwtFilter;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-            .csrf(csrf -> csrf.disable()) // Disable CSRF since you are using JWT
-            .authorizeRequests(authz -> authz
-                    .requestMatchers("/register", "/login").permitAll() // Allow register and login endpoints
-                    .requestMatchers("/auth/me","/camera-reports").permitAll()  // ✅ Auth API public access
-                    .requestMatchers("/users", "/tickets","/comments").permitAll() // Allow users and tickets endpoints without authentication
-                    .requestMatchers("/tickets/**").permitAll() // Allow specific ticket endpoints
-                    .requestMatchers("/users/**").permitAll() // Allow specific user endpoints
-                    .requestMatchers("/comments/**").permitAll() // Allow specific comment endpoints
-                    .requestMatchers("/camera-reports/**").permitAll()
-                    .requestMatchers("/siteMasterData/**").permitAll()
-                    .requestMatchers("/admin/**").hasRole("ADMIN") // Only allow ADMIN role for admin endpoints
-                    .requestMatchers("/user/**").hasRole("USER") // Only allow USER role for user endpoints
-                    .requestMatchers("/team/**").hasRole("TEAMMEMBER") // Grant access to TEAMMEMBER role
-             
-                    .anyRequest().authenticated() // Require authentication for other requests
-                )
-            .httpBasic(Customizer.withDefaults())  // Basic authentication for debugging
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless session
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)  // Add JWT filter
-            .build();
-    }
+	    @Bean
+	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	        return http
+	            .csrf(csrf -> csrf.disable())  // Disable CSRF since JWT is being used
+	            .authorizeRequests(authz -> authz
+	                .requestMatchers("/register", "/login").permitAll()
+	                .requestMatchers("/auth/me", "/camera-reports").permitAll()  // Allow some public access
+	                .requestMatchers("/users", "/tickets", "/comments").permitAll()
+	                .requestMatchers("/camera-reports/**").permitAll()
+	                .requestMatchers("/siteMasterData/**").permitAll()
+	                .requestMatchers("/admin/**").hasRole("ADMIN")
+	                .requestMatchers("/user/**").hasRole("USER")
+	                .requestMatchers("/team/**").hasRole("TEAMMEMBER")
+	                .anyRequest().authenticated()
+	            )
+	            .httpBasic(Customizer.withDefaults())  // Optional: Basic authentication for debugging
+	            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless session
+	            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)  // Add JWT filter
+	            .cors().and()  // Add CORS configuration
+	            .build();
+	    }
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12)); // Use BCrypt for password encoding
-        provider.setUserDetailsService(userDetailsService); // Set the UserDetailsService for the provider
-        return provider;
-    }
+	    @Bean
+	    public AuthenticationProvider authenticationProvider() {
+	        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+	        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));  // Use BCrypt for password encoding
+	        provider.setUserDetailsService(userDetailsService);  // Set the UserDetailsService for the provider
+	        return provider;
+	    }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+	    @Bean
+	    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+	        return config.getAuthenticationManager();
+	    }
 }
