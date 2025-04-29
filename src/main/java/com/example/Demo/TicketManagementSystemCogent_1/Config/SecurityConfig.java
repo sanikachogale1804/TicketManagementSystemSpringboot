@@ -31,15 +31,18 @@ public class SecurityConfig {
 	        return http
 	            .csrf(csrf -> csrf.disable())  // Disable CSRF since JWT is being used
 	            .authorizeRequests(authz -> authz
-	                .requestMatchers("/register", "/login").permitAll()
-	                .requestMatchers("/auth/me", "/camera-reports").permitAll()  // Allow some public access
-	                .requestMatchers("/users", "/tickets", "/comments").permitAll()
-	                .requestMatchers("/camera-reports/**").permitAll()
-	                .requestMatchers("/siteMasterData/**").permitAll()
-	                .requestMatchers("/admin/**").hasRole("ADMIN")
-	                .requestMatchers("/user/**").hasRole("USER")
-	                .requestMatchers("/team/**").hasRole("TEAMMEMBER")
-	                .anyRequest().authenticated()
+	            		.requestMatchers("/register", "/login").permitAll()
+	            		.requestMatchers("/auth/me").permitAll()  // ✅ Auth API public access
+		                .requestMatchers("/users", "/tickets", "/comments").permitAll()
+		                .requestMatchers("/tickets/**").permitAll() // Allow specific ticket endpoints
+	                    .requestMatchers("/users/**").permitAll() // Allow specific user endpoints
+	                    .requestMatchers("/comments/**").permitAll() // Allow specific comment endpoints
+		                .requestMatchers("/camera-reports/**").permitAll()
+		                .requestMatchers("/siteMasterData/**").permitAll()
+		                .requestMatchers("/admin/**").hasRole("ADMIN")
+		                .requestMatchers("/user/**").hasRole("USER")
+		                .requestMatchers("/team/**").hasRole("TEAMMEMBER")
+		                .anyRequest().authenticated()
 	            )
 	            .httpBasic(Customizer.withDefaults())  // Optional: Basic authentication for debugging
 	            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless session
