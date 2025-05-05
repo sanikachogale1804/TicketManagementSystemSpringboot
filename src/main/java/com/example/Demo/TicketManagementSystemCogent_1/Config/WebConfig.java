@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Apply CORS settings to all endpoints
         .allowedOrigins(
-        	    "http://localhost:3000"
+        		"http://localhost:3000", "http://192.168.1.102:3000"
         	)
             .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS") // Allowed HTTP methods
             .allowedHeaders("Authorization", "Content-Type", "Accept") // Allowed headers (added Accept header)
