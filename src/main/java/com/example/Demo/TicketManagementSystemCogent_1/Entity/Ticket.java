@@ -37,6 +37,13 @@ public class Ticket {
     private String SiteID;
     
     @Column(nullable = false)
+    private String state;
+
+    @Column(nullable = false)
+    private String district;
+
+    
+    @Column(nullable = false)
     private String description;
     
     @Enumerated(EnumType.STRING)

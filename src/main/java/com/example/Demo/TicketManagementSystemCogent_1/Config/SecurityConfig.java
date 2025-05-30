@@ -31,6 +31,7 @@ public class SecurityConfig {
 	        return http
 	            .csrf(csrf -> csrf.disable())  // Disable CSRF since JWT is being used
 	            .authorizeRequests(authz -> authz
+	            		.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() 
 	            		.requestMatchers("/register", "/login").permitAll()
 	            		.requestMatchers("/auth/me").permitAll()  // ✅ Auth API public access
 		                .requestMatchers("/users", "/tickets", "/comments").permitAll()
@@ -39,6 +40,7 @@ public class SecurityConfig {
 	                    .requestMatchers("/comments/**").permitAll() // Allow specific comment endpoints
 		                .requestMatchers("/camera-reports/**").permitAll()
 		                .requestMatchers("/siteMasterData/**").permitAll()
+		                .requestMatchers("/siteMasterData2/**").permitAll()
 		                .requestMatchers("/admin/**").hasRole("ADMIN")
 		                .requestMatchers("/user/**").hasRole("USER")
 		                .requestMatchers("/team/**").hasRole("TEAMMEMBER")
