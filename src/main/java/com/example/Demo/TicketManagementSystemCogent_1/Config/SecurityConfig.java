@@ -41,6 +41,7 @@ public class SecurityConfig {
 		                .requestMatchers("/camera-reports/**").permitAll()
 		                .requestMatchers("/siteMasterData/**").permitAll()
 		                .requestMatchers("/siteMasterData2/**").permitAll()
+		                .requestMatchers("/siteMasterData2/**").hasAnyRole("CUSTOMER", "ADMIN")
 		                .requestMatchers("/admin/**").hasRole("ADMIN")
 		                .requestMatchers("/user/**").hasRole("USER")
 		                .requestMatchers("/team/**").hasRole("TEAMMEMBER")

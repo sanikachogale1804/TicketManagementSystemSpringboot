@@ -62,4 +62,5 @@ public class siteMasterData2Controller {
         List<SiteMasterData2> savedSites = siteRepository.saveAll(sites);
         return ResponseEntity.ok(savedSites);
     }
+    
 }

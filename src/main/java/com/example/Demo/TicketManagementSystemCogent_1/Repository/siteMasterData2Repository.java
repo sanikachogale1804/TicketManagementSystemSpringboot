@@ -12,6 +12,6 @@ import com.example.Demo.TicketManagementSystemCogent_1.Entity.SiteMasterData2;
 @RestResource(path = "siteMasterData2")
 public interface siteMasterData2Repository extends JpaRepository<SiteMasterData2, Long>{
 	
-	 Optional<SiteMasterData2> findBySiteId(String siteId);
+	Optional<SiteMasterData2> findBySiteId(String siteId);
 
 }
