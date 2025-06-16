@@ -11,6 +11,8 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,20 +32,21 @@ public class Ticket {
     @JoinColumn(name = "assigned_to", referencedColumnName = "userId", nullable = true)
     private User assignedTo;  // User to whom the ticket is assigned
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String IASSPName;
     
-    @Column(nullable = false)
-    private String SiteID;
+    @Column(nullable = true)
+    @JsonProperty("siteID")
+    private String siteId;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String state;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String district;
 
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String description;
     
     @Enumerated(EnumType.STRING)

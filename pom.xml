@@ -11,7 +11,7 @@
 	<groupId>com.example.Demo</groupId>
 	<artifactId>TicketManagementSystemCogent-1</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging> <!-- ✅ WAR packaging added -->
+	<packaging>jar</packaging> <!-- ✅ WAR packaging added -->
 	<name>TicketManagementSystemCogent-1</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
