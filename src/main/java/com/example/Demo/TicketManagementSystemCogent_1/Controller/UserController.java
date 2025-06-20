@@ -17,16 +17,20 @@ public class UserController {
 	private UserService service;
 
 	@CrossOrigin(origins = {
-	        "http://localhost:3000"
-	    })  // Allow requests from React frontend
+		    "http://localhost:3000",
+		    "https://rainbow-kataifi-7acd83.netlify.app/",//local
+		    "https://taupe-bubblegum-e3d51c.netlify.app/"//VM
+	 	})  // Allow requests from React frontend
 	@PostMapping("/register")
 	public User register(@RequestBody User user) {
 		return service.register(user);
 	}
 	
 	@CrossOrigin(origins = {
-	        "http://localhost:3000"
-	    })// Allow requests from React frontend
+		    "http://localhost:3000",
+		    "https://rainbow-kataifi-7acd83.netlify.app/",//local
+		    "https://taupe-bubblegum-e3d51c.netlify.app/"//VM
+	 	})
 	 @PostMapping("/login")
     public String login(@RequestBody User user) {
         // Login method to authenticate and generate JWT token based on user roles
