@@ -19,7 +19,7 @@ public class UserController {
 	@CrossOrigin(origins = {
 		    "http://localhost:3000",
 		    "https://rainbow-kataifi-7acd83.netlify.app/",//local
-		    "https://taupe-bubblegum-e3d51c.netlify.app/"//VM
+		    "https://cogentmobileapp.in:8443"//VM
 	 	})  // Allow requests from React frontend
 	@PostMapping("/register")
 	public User register(@RequestBody User user) {
@@ -29,7 +29,7 @@ public class UserController {
 	@CrossOrigin(origins = {
 		    "http://localhost:3000",
 		    "https://rainbow-kataifi-7acd83.netlify.app/",//local
-		    "https://taupe-bubblegum-e3d51c.netlify.app/"//VM
+		    "https://cogentmobileapp.in:8443"//VM
 	 	})
 	 @PostMapping("/login")
     public String login(@RequestBody User user) {

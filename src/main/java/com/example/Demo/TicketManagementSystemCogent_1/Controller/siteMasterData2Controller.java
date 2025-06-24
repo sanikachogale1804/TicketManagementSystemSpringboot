@@ -25,7 +25,7 @@ import com.example.Demo.TicketManagementSystemCogent_1.Repository.siteMasterData
 @CrossOrigin(origins = {
 	    "http://localhost:3000",
 	    "https://rainbow-kataifi-7acd83.netlify.app/",//local
-	    "https://taupe-bubblegum-e3d51c.netlify.app/"//VM
+	    "https://cogentmobileapp.in:8443"//VM
  	})  // Allow requests from React frontend
 @RequestMapping("/siteMasterData2")
 public class siteMasterData2Controller {
