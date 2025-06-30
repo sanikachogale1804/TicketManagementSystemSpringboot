@@ -13,7 +13,8 @@ import com.example.Demo.TicketManagementSystemCogent_1.Service.TicketService;
 @CrossOrigin(origins = {
 	    "http://localhost:3000",
 	    "https://rainbow-kataifi-7acd83.netlify.app/",//local
-	    "https://cogentmobileapp.in:8443"//VM
+	    "https://cogentmobileapp.in:8443",//VM
+	    "https://45.115.186.228:8443"
 
  	})
 @RestController

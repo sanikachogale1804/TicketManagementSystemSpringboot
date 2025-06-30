@@ -34,7 +34,7 @@ public class CameraReportController {
 	    @GetMapping("/analyze")
 	    public String runAnalysis() {
 	        try {
-	            cameraAnalysisService.analyzeAndSave("D:\\NAS1"); 
+	            cameraAnalysisService.analyzeAndSave("Z:\\"); 
 	            return "Analysis Done!";
 	        } catch (Exception e) {
 	            e.printStackTrace(); // Log the error
@@ -44,7 +44,7 @@ public class CameraReportController {
 	    
 	    @GetMapping("/storage-info")
 	    public Map<String, Double> getStorageInfo() {
-	        return cameraAnalysisService.getStorageInfo("D:\\NAS1");
+	        return cameraAnalysisService.getStorageInfo("Z:\\");
 	    }
 
 	    
@@ -78,7 +78,7 @@ public class CameraReportController {
 	            "IPC-ATPL-905862-AIPTZ"
 	        );
 
-	        String basePath = "D:\\NAS1"; // 👈 Change this to your desired base path
+	        String basePath = "Z:\\"; // 👈 Change this to your desired base path
 
 	        File baseDir = new File(basePath);
 	        if (!baseDir.exists()) baseDir.mkdirs();

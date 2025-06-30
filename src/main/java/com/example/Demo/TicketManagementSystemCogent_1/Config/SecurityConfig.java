@@ -16,54 +16,61 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-	 @Autowired
-	    private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-	    @Autowired
-	    private JWTFilter jwtFilter;
+    @Autowired
+    private JWTFilter jwtFilter;
 
-	    @Bean
-	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-	        return http
-	            .csrf(csrf -> csrf.disable())  // Disable CSRF since JWT is being used
-	            .authorizeRequests(authz -> authz
-	            		.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() 
-	            		.requestMatchers("/register", "/login").permitAll()
-	            		.requestMatchers("/auth/me").permitAll()  // ✅ Auth API public access
-		                .requestMatchers("/users", "/tickets", "/comments").permitAll()
-		                .requestMatchers("/tickets/**").permitAll() // Allow specific ticket endpoints
-	                    .requestMatchers("/users/**").permitAll() // Allow specific user endpoints
-	                    .requestMatchers("/comments/**").permitAll() // Allow specific comment endpoints
-		                .requestMatchers("/camera-reports/**").permitAll()
-		                .requestMatchers("/siteMasterData/**").permitAll()
-		                .requestMatchers("/siteMasterData2/**").permitAll()
-		                .requestMatchers("/siteMasterData2/**").hasAnyRole("CUSTOMER", "ADMIN")
-		                .requestMatchers("/admin/**").hasRole("ADMIN")
-		                .requestMatchers("/user/**").hasRole("USER")
-		                .requestMatchers("/team/**").hasRole("TEAMMEMBER")
-		                .anyRequest().authenticated()
-	            )
-	            .httpBasic(Customizer.withDefaults())  // Optional: Basic authentication for debugging
-	            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless session
-	            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)  // Add JWT filter
-	            .cors().and()  // Add CORS configuration
-	            .build();
-	    }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+            .csrf(csrf -> csrf.disable())
+            .cors(Customizer.withDefaults()) // ✅ Enable CORS support
+            .authorizeRequests(authz -> authz
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/register", "/login", "/auth/me").permitAll()
+                .requestMatchers("/users", "/tickets", "/comments").permitAll()
+                .requestMatchers("/tickets/**").permitAll()
+                .requestMatchers("/users/**").permitAll()
+                .requestMatchers("/comments/**").permitAll()
+                .requestMatchers("/camera-reports/**").permitAll()
+                .requestMatchers("/siteMasterData/**").permitAll()
+                .requestMatchers("/siteMasterData2/**").permitAll()
+                .requestMatchers("/siteMasterData2/**").hasAnyRole("CUSTOMER", "ADMIN")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/user/**").hasRole("USER")
+                .requestMatchers("/team/**").hasRole("TEAMMEMBER")
+                .anyRequest().authenticated()
+            )
+            .httpBasic(Customizer.withDefaults())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
+    }
 
-	    @Bean
-	    public AuthenticationProvider authenticationProvider() {
-	        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-	        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));  // Use BCrypt for password encoding
-	        provider.setUserDetailsService(userDetailsService);  // Set the UserDetailsService for the provider
-	        return provider;
-	    }
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+        provider.setUserDetailsService(userDetailsService);
+        return provider;
+    }
 
-	    @Bean
-	    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-	        return config.getAuthenticationManager();
-	    }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    
 }
