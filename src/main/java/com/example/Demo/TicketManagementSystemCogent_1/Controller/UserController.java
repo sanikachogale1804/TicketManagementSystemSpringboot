@@ -17,10 +17,11 @@ public class UserController {
 	private UserService service;
 
 	@CrossOrigin(origins = {
-		    "http://localhost:3000",
+		    "http://localhost:3000","http://127.0.0.1:3000", 
+            "http://192.168.1.91:3000",
 		    "https://rainbow-kataifi-7acd83.netlify.app/",//local
-		    "https://cogentmobileapp.in:8443",//VM
-            "https://45.115.186.228:8443"
+//		    "https://cogentmobileapp.in:8443",//VM
+//            "https://45.115.186.228:8443"
 	 	})  // Allow requests from React frontend
 	@PostMapping("/register")
 	public User register(@RequestBody User user) {
@@ -28,7 +29,8 @@ public class UserController {
 	}
 	
 	@CrossOrigin(origins = {
-		    "http://localhost:3000",
+		    "http://localhost:3000","http://127.0.0.1:3000",
+		    "http://192.168.1.91:3000",
 		    "https://rainbow-kataifi-7acd83.netlify.app/",//local
 		    "https://cogentmobileapp.in:8443",//VM
 		    "https://45.115.186.228:8443"
