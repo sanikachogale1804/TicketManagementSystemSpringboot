@@ -28,31 +28,35 @@ public class SecurityConfig {
 
 	    @Bean
 	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-	        return http
-	            .csrf(csrf -> csrf.disable())  // Disable CSRF since JWT is being used
-	            .authorizeRequests(authz -> authz
-	            		.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() 
-	            		.requestMatchers("/register", "/login").permitAll()
-	            		.requestMatchers("/auth/me").permitAll()  // ✅ Auth API public access
-		                .requestMatchers("/users", "/tickets", "/comments").permitAll()
-		                .requestMatchers("/tickets/**").permitAll() // Allow specific ticket endpoints
-	                    .requestMatchers("/users/**").permitAll() // Allow specific user endpoints
-	                    .requestMatchers("/comments/**").permitAll() // Allow specific comment endpoints
-		                .requestMatchers("/camera-reports/**").permitAll()
-		                .requestMatchers("/siteMasterData/**").permitAll()
-		                .requestMatchers("/siteMasterData2/**").permitAll()
-		                .requestMatchers("/siteMasterData2/**").hasAnyRole("CUSTOMER", "ADMIN")
-		                .requestMatchers("/admin/**").hasRole("ADMIN")
-		                .requestMatchers("/user/**").hasRole("USER")
-		                .requestMatchers("/team/**").hasRole("TEAMMEMBER")
-		                .anyRequest().authenticated()
+	        http
+	            .cors(Customizer.withDefaults()) // ✅ This enables your WebConfig CORS setup
+	            .csrf(csrf -> csrf.disable())
+	            .authorizeHttpRequests(authz -> authz
+	                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+	                .requestMatchers("/register", "/login").permitAll()
+	                .requestMatchers("/auth/me").permitAll()
+	                .requestMatchers("/users", "/tickets", "/comments").permitAll()
+	                .requestMatchers("/tickets/**").permitAll()
+	                .requestMatchers("/users/**").permitAll()
+	                .requestMatchers("/comments/**").permitAll()
+	                .requestMatchers("/camera-reports/**").permitAll()
+	                .requestMatchers("/siteMasterData/**").permitAll()
+	                .requestMatchers("/siteMasterData2/**").permitAll()
+	                .requestMatchers("/siteMasterData2/**").hasAnyRole("CUSTOMER", "ADMIN")
+	                .requestMatchers("/admin/**").hasRole("ADMIN")
+	                .requestMatchers("/user/**").hasRole("USER")
+	                .requestMatchers("/team/**").hasRole("TEAMMEMBER")
+	                .anyRequest().authenticated()
 	            )
-	            .httpBasic(Customizer.withDefaults())  // Optional: Basic authentication for debugging
-	            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless session
-	            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)  // Add JWT filter
-	            .cors().and()  // Add CORS configuration
-	            .build();
+	            .httpBasic(Customizer.withDefaults())
+	            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+	        // ✅ Add JWT filter AFTER configuring http
+	        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+	        return http.build();
 	    }
+
 
 	    @Bean
 	    public AuthenticationProvider authenticationProvider() {
