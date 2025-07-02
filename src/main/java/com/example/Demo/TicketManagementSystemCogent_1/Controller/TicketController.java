@@ -15,7 +15,7 @@ import com.example.Demo.TicketManagementSystemCogent_1.Service.TicketService;
         "http://192.168.1.91:3000",
 	    "https://rainbow-kataifi-7acd83.netlify.app/",//local
 //	    "https://cogentmobileapp.in:8443",//VM
-//	    "https://45.115.186.228:8443"
+	    "http://45.115.186.228:3000"
 
  	})
 @RestController

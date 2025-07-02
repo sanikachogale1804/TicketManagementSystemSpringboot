@@ -31,7 +31,5 @@ public class SiteMasterData {
 	 @Column(name = "site_live_date")
 	 private String siteLiveDate;
 
-	 @OneToMany(mappedBy = "site", cascade = CascadeType.ALL)
-	 private List<CameraReport> cameraReports;
 
 }

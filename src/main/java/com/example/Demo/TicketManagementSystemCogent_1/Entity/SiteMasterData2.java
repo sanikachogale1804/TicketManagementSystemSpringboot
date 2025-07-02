@@ -1,9 +1,13 @@
 package com.example.Demo.TicketManagementSystemCogent_1.Entity;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,5 +29,8 @@ public class SiteMasterData2 {
 	private String state;
 	
 	private String district;
+	
+	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL)
+	private List<CameraReport> cameraReports;
 	
 }

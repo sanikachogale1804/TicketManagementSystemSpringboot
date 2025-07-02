@@ -52,7 +52,7 @@ public class CameraReport {
 	 
 	 @ManyToOne
 	 @JoinColumn(name = "site_master_id",referencedColumnName = "id") // This column will be the foreign key to SiteMasterData
-	 private SiteMasterData site;
+	 private SiteMasterData2 site;
 	 
 	 
 }

@@ -34,7 +34,7 @@ public class CameraReportController {
 	    @GetMapping("/analyze")
 	    public String runAnalysis() {
 	        try {
-	            cameraAnalysisService.analyzeAndSave("Z:\\"); 
+	        	cameraAnalysisService.analyzeAndSave("Z:\\NAS DATA");
 	            return "Analysis Done!";
 	        } catch (Exception e) {
 	            e.printStackTrace(); // Log the error
@@ -44,7 +44,7 @@ public class CameraReportController {
 	    
 	    @GetMapping("/storage-info")
 	    public Map<String, Double> getStorageInfo() {
-	        return cameraAnalysisService.getStorageInfo("Z:\\");
+	        return cameraAnalysisService.getStorageInfo("Z:\\NAS DATA");
 	    }
 
 	    
@@ -62,61 +62,61 @@ public class CameraReportController {
 //	        return "Inserted test report!";
 //	    }
 	    
-	    @GetMapping("/create-folders")
-	    public String createCameraFolders() {
-	        List<String> cameraIds = List.of(
-	            "IPC-S5D86998951033",
-	            "IPC-S5D86998414026",
-	            "IPC-S5D86998858134",
-	            "IPC-S5D86997189514",
-	            "IPC-S5D87069589734",
-	            "IPC-S5D86996937664",
-	            "IPC-ATPL-905145-AIPTZ",
-	            "IPC-S5D86996615661",
-	            "IPC-S5D87070913310",
-	            "IPC-ATPL-904989-AIPTZ",
-	            "IPC-ATPL-905862-AIPTZ"
-	        );
-
-	        String basePath = "Z:\\"; // 👈 Change this to your desired base path
-
-	        File baseDir = new File(basePath);
-	        if (!baseDir.exists()) baseDir.mkdirs();
-
-	        for (String id : cameraIds) {
-	            File folder = new File(baseDir, id);
-	            if (!folder.exists()) {
-	                boolean created = folder.mkdirs();
-	                System.out.println("Created: " + folder.getAbsolutePath() + " -> " + created);
-	            }
-	        }
-
-	        return "Folders created successfully!";
-	    }
+//	    @GetMapping("/create-folders")
+//	    public String createCameraFolders() {
+//	        List<String> cameraIds = List.of(
+//	            "IPC-S5D86998951033",
+//	            "IPC-S5D86998414026",
+//	            "IPC-S5D86998858134",
+//	            "IPC-S5D86997189514",
+//	            "IPC-S5D87069589734",
+//	            "IPC-S5D86996937664",
+//	            "IPC-ATPL-905145-AIPTZ",
+//	            "IPC-S5D86996615661",
+//	            "IPC-S5D87070913310",
+//	            "IPC-ATPL-904989-AIPTZ",
+//	            "IPC-ATPL-905862-AIPTZ"
+//	        );
+//
+//	        String basePath = "Z:\\"; // 👈 Change this to your desired base path
+//
+//	        File baseDir = new File(basePath);
+//	        if (!baseDir.exists()) baseDir.mkdirs();
+//
+//	        for (String id : cameraIds) {
+//	            File folder = new File(baseDir, id);
+//	            if (!folder.exists()) {
+//	                boolean created = folder.mkdirs();
+//	                System.out.println("Created: " + folder.getAbsolutePath() + " -> " + created);
+//	            }
+//	        }
+//
+//	        return "Folders created successfully!";
+//	    }
 	    
-	    @GetMapping("/create-date-folders")
-	    public String createDateFolders() {
-	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-	        
-	        String start = "10/29/2024";
-	        String end = "1/10/2025";
-
-	        LocalDate startDate = LocalDate.parse(start, formatter);
-	        LocalDate endDate = LocalDate.parse(end, formatter);
-
-	        String basePath = "D:\\NAS1\\IPC-ATPL-904989-AIPTZ"; // Change as needed
-
-	        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-	            String folderName = date.toString(); // e.g., 2024-10-29
-	            File folder = new File(basePath, folderName);
-	            if (!folder.exists()) {
-	                folder.mkdirs();
-	                System.out.println("Created: " + folder.getAbsolutePath());
-	            }
-	        }
-
-	        return "Date folders created from " + startDate + " to " + endDate;
-	    }
+//	    @GetMapping("/create-date-folders")
+//	    public String createDateFolders() {
+//	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+//	        
+//	        String start = "10/29/2024";
+//	        String end = "1/10/2025";
+//
+//	        LocalDate startDate = LocalDate.parse(start, formatter);
+//	        LocalDate endDate = LocalDate.parse(end, formatter);
+//
+//	        String basePath = "D:\\NAS1\\IPC-ATPL-904989-AIPTZ"; // Change as needed
+//
+//	        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+//	            String folderName = date.toString(); // e.g., 2024-10-29
+//	            File folder = new File(basePath, folderName);
+//	            if (!folder.exists()) {
+//	                folder.mkdirs();
+//	                System.out.println("Created: " + folder.getAbsolutePath());
+//	            }
+//	        }
+//
+//	        return "Date folders created from " + startDate + " to " + endDate;
+//	    }
 	    
 	    
 
