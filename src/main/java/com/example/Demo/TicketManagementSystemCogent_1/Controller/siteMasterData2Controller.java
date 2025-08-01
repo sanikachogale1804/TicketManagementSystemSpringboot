@@ -26,7 +26,7 @@ import com.example.Demo.TicketManagementSystemCogent_1.Repository.siteMasterData
 	    "http://localhost:3000",
 	    "https://rainbow-kataifi-7acd83.netlify.app/",//local
 	    "https://cogentmobileapp.in:8443",//VM,
-	    "http://45.115.186.228:3000"
+	    "http://117.250.211.51:3000"
  	})  // Allow requests from React frontend
 @RequestMapping("/siteMasterData2")
 public class siteMasterData2Controller {

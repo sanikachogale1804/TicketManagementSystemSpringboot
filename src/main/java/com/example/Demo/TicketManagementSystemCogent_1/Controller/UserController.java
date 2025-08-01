@@ -18,28 +18,23 @@ public class UserController {
     private UserService service;
 
     @CrossOrigin(origins = {
-		    "http://localhost:3000","http://127.0.0.1:3000",
-		    "http://192.168.1.91:3000",
-		    "http://45.115.186.228:3000"
-	 	})
+    	    "http://localhost:3000",
+    	    "http://127.0.0.1:3000",
+    	    "http://192.168.1.91:3000",
+    	    "http://117.250.211.51:3000"
+    	})
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
-        try {
-            User saved = service.register(user);
-            return ResponseEntity.ok(saved);
-        } catch (Exception e) {
-            e.printStackTrace(); // Log full error in console
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Registration failed: " + e.getMessage());
-        }
-    }
+	public User register(@RequestBody User user) {
+		return service.register(user);
+	}
 
 
     @CrossOrigin(origins = {
-		    "http://localhost:3000","http://127.0.0.1:3000",
-		    "http://192.168.1.91:3000",
-		    "http://45.115.186.228:3000"
-	 	})
+    	    "http://localhost:3000",
+    	    "http://127.0.0.1:3000",
+    	    "http://192.168.1.91:3000",
+    	    "http://117.250.211.51:3000"
+    	})
     @PostMapping("/login")
     public String login(@RequestBody User user) {
         String token = service.verify(user);
