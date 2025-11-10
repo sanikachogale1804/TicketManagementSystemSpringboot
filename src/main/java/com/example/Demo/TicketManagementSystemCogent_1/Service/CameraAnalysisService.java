@@ -1,15 +1,18 @@
 package com.example.Demo.TicketManagementSystemCogent_1.Service;
 
-import java.io.File;
-import java.time.LocalDate;
-import java.util.*;
-
-import org.springframework.stereotype.Service;
-
 import com.example.Demo.TicketManagementSystemCogent_1.Entity.CameraReport;
 import com.example.Demo.TicketManagementSystemCogent_1.Repository.CameraReportRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -17,73 +20,111 @@ public class CameraAnalysisService {
 
     private final CameraReportRepository cameraReportRepository;
 
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("M_d_yyyy");
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+
+    /**
+     * Main method to analyze cameras and save reports
+     */
     public void analyzeAndSave(String basePath) {
         File baseDir = new File(basePath);
         if (!baseDir.exists() || !baseDir.isDirectory()) {
-            throw new IllegalArgumentException("Base path is invalid: " + basePath);
+            throw new IllegalArgumentException("Base path does not exist or is not a directory: " + basePath);
         }
 
-        // 🔍 Get disk space info once (since it's disk-wide)
-        Map<String, Double> storageInfo = getStorageInfo(basePath);
-        double totalSpaceGB = storageInfo.getOrDefault("totalSpaceGB", 0.0);
-        double usedSpaceGB = storageInfo.getOrDefault("usedSpaceGB", 0.0);
-        double freeSpaceGB = storageInfo.getOrDefault("freeSpaceGB", 0.0);
+        List<File> videoDirs = new ArrayList<>();
+        findVideoFoldersRecursively(baseDir, videoDirs);
 
-        for (File cameraFolder : Objects.requireNonNull(baseDir.listFiles(File::isDirectory))) {
-            String cameraId = cameraFolder.getName();
+        if (videoDirs.isEmpty()) {
+            System.out.println("No 'video' folders found under: " + basePath);
+            return;
+        }
 
-            File[] dateFolders = cameraFolder.listFiles(File::isDirectory);
-            if (dateFolders == null || dateFolders.length == 0) continue;
+        for (File videoDir : videoDirs) {
+            String cameraId = videoDir.getParentFile().getName(); // Parent folder name = camera ID
 
-            List<LocalDate> dates = new ArrayList<>();
+            File[] dateFolders = videoDir.listFiles(File::isDirectory);
+            if (dateFolders == null || dateFolders.length == 0) {
+                System.out.println("No date folders found for camera: " + cameraId);
+                continue;
+            }
+
+            // Get start and end date
+            LocalDate startDate = null;
+            LocalDate endDate = null;
+
             for (File dateFolder : dateFolders) {
                 try {
-                    LocalDate date = LocalDate.parse(dateFolder.getName()); // Assuming folder names are yyyy-MM-dd
-                    dates.add(date);
-                } catch (Exception e) {
-                    System.out.println("Skipping invalid date folder: " + dateFolder.getName());
+                    LocalDate date = LocalDate.parse(dateFolder.getName(), DATE_FORMAT);
+                    if (startDate == null || date.isBefore(startDate)) startDate = date;
+                    if (endDate == null || date.isAfter(endDate)) endDate = date;
+                } catch (Exception ignored) {
                 }
             }
 
-            if (dates.isEmpty()) continue;
+            int recordingDays = (startDate != null && endDate != null)
+                    ? (int) (endDate.toEpochDay() - startDate.toEpochDay() + 1)
+                    : 0;
 
-            dates.sort(Comparator.naturalOrder());
+            // Get storage info
+            double totalSpaceGB = 0;
+            double usedSpaceGB = 0;
+            double freeSpaceGB = 0;
 
-            long totalBytes = calculateFolderSize(cameraFolder);
-            double storageUsedGB = totalBytes / (1024.0 * 1024 * 1024);
+            try {
+                Path path = videoDir.toPath();
+                FileStore store = Files.getFileStore(path);
+                totalSpaceGB = bytesToGB(store.getTotalSpace());
+                freeSpaceGB = bytesToGB(store.getUsableSpace());
+                usedSpaceGB = totalSpaceGB - freeSpaceGB;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            double storageUsedGB = calculateFolderSizeGB(videoDir);
 
             CameraReport report = CameraReport.builder()
                     .cameraId(cameraId)
-                    .startDate(dates.get(0).toString())
-                    .endDate(dates.get(dates.size() - 1).toString())
-                    .recordingDays(dates.size())
+                    .startDate(startDate != null ? startDate.toString() : null)
+                    .endDate(endDate != null ? endDate.toString() : null)
+                    .recordingDays(recordingDays)
                     .storageUsedGB(storageUsedGB)
-                    .dateIssue(0) // Placeholder
+                    .dateIssue(0)
                     .totalSpaceGB(totalSpaceGB)
                     .usedSpaceGB(usedSpaceGB)
                     .freeSpaceGB(freeSpaceGB)
                     .build();
 
-            System.out.println("Saving report for " + cameraId + ": " + report);
+            System.out.println("Saving report: " + report);
             cameraReportRepository.save(report);
         }
     }
 
-    public Map<String, Double> getStorageInfo(String path) {
-        File root = new File(path);
-        long total = root.getTotalSpace();
-        long free = root.getFreeSpace();
-        long used = total - free;
+    /**
+     * Recursive method to find all "video" folders
+     */
+    private void findVideoFoldersRecursively(File folder, List<File> videoDirs) {
+        File[] files = folder.listFiles(File::isDirectory);
+        if (files == null) return;
 
-        Map<String, Double> storage = new HashMap<>();
-        storage.put("totalSpaceGB", total / (1024.0 * 1024 * 1024));
-        storage.put("usedSpaceGB", used / (1024.0 * 1024 * 1024));
-        storage.put("freeSpaceGB", free / (1024.0 * 1024 * 1024));
-
-        return storage;
+        for (File subFolder : files) {
+            if ("video".equalsIgnoreCase(subFolder.getName())) {
+                videoDirs.add(subFolder);
+            } else {
+                findVideoFoldersRecursively(subFolder, videoDirs);
+            }
+        }
     }
 
-    private long calculateFolderSize(File folder) {
+    private double bytesToGB(long bytes) {
+        return Double.parseDouble(DECIMAL_FORMAT.format(bytes / (1024.0 * 1024.0 * 1024.0)));
+    }
+
+    private double calculateFolderSizeGB(File folder) {
+        return bytesToGB(calculateFolderSizeBytes(folder));
+    }
+
+    private long calculateFolderSizeBytes(File folder) {
         long length = 0;
         File[] files = folder.listFiles();
         if (files != null) {
@@ -91,7 +132,7 @@ public class CameraAnalysisService {
                 if (file.isFile()) {
                     length += file.length();
                 } else {
-                    length += calculateFolderSize(file);
+                    length += calculateFolderSizeBytes(file);
                 }
             }
         }

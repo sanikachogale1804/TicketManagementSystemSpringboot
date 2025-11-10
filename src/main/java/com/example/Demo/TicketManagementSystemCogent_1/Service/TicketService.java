@@ -20,7 +20,7 @@ import com.example.Demo.TicketManagementSystemCogent_1.Repository.TicketReposito
  
  	  public List<Ticket> getAllTickets() {
  		  System.out.println("Fetching Tickets");
- 	     return ticketRepository.findAll(); // Return all tickets if no filter is provided
+ 	     return ticketRepository.findAll(); 
  	     
  	  }
  	  

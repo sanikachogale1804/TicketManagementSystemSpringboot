@@ -20,7 +20,12 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/camera-reports")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {
+	    "http://localhost:3000",
+	    "http://127.0.0.1:3000",
+	    "http://192.168.1.91:3000",
+	    "http://117.250.211.51:3000"
+	})
 public class CameraReportController {
 	
 	 private final CameraReportRepository cameraReportRepository;
@@ -31,21 +36,23 @@ public class CameraReportController {
 //	        return cameraReportRepository.findAll();
 //	    }
 	    
-	    @GetMapping("/analyze")
-	    public String runAnalysis() {
-	        try {
-	        	cameraAnalysisService.analyzeAndSave("Z:\\NAS DATA");
-	            return "Analysis Done!";
-	        } catch (Exception e) {
-	            e.printStackTrace(); // Log the error
-	            return "Error occurred during analysis: " + e.getMessage();
-	        }
-	    }
+	 @GetMapping("/analyze")
+	 public String runAnalysis() {
+	     try {
+	         // VM path
+	         cameraAnalysisService.analyzeAndSave("Z:\\NAS~1");
+	         return "Analysis Done!";
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return "Error occurred during analysis: " + e.getMessage();
+	     }
+	 }
+
 	    
-	    @GetMapping("/storage-info")
-	    public Map<String, Double> getStorageInfo() {
-	        return cameraAnalysisService.getStorageInfo("Z:\\NAS DATA");
-	    }
+//	    @GetMapping("/storage-info")
+//	    public Map<String, Double> getStorageInfo() {
+//	        return cameraAnalysisService.getStorageInfo("Z:\\");
+//	    }
 
 	    
 //	    @GetMapping("/test-insert")
