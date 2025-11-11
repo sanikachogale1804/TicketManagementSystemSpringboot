@@ -23,42 +23,37 @@ public class CameraAnalysisService {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("M_d_yyyy");
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
-    /**
-     * Main method to analyze cameras and save reports
-     */
     public void analyzeAndSave(String basePath) {
         File baseDir = new File(basePath);
         if (!baseDir.exists() || !baseDir.isDirectory()) {
             throw new IllegalArgumentException("Base path does not exist or is not a directory: " + basePath);
         }
 
-        List<File> videoDirs = new ArrayList<>();
-        findVideoFoldersRecursively(baseDir, videoDirs);
+        List<File> mediaDirs = new ArrayList<>();
+        findMediaFoldersRecursively(baseDir, mediaDirs);
 
-        if (videoDirs.isEmpty()) {
-            System.out.println("No 'video' folders found under: " + basePath);
-            return;
-        }
+        // Map to hold combined reports per camera
+        Map<String, CameraReport> cameraReportMap = new HashMap<>();
 
-        for (File videoDir : videoDirs) {
-            String cameraId = videoDir.getParentFile().getName(); // Parent folder name = camera ID
+        for (File mediaDir : mediaDirs) {
+            String cameraId = mediaDir.getParentFile().getName();
+            String mediaType = mediaDir.getName().equalsIgnoreCase("picture") ? "picture" : "video";
 
-            File[] dateFolders = videoDir.listFiles(File::isDirectory);
-            if (dateFolders == null || dateFolders.length == 0) {
-                System.out.println("No date folders found for camera: " + cameraId);
-                continue;
-            }
+            File[] contents = mediaDir.listFiles();
+            double storageUsedGB = calculateFolderSizeGB(mediaDir);
 
-            // Get start and end date
             LocalDate startDate = null;
             LocalDate endDate = null;
 
-            for (File dateFolder : dateFolders) {
-                try {
-                    LocalDate date = LocalDate.parse(dateFolder.getName(), DATE_FORMAT);
-                    if (startDate == null || date.isBefore(startDate)) startDate = date;
-                    if (endDate == null || date.isAfter(endDate)) endDate = date;
-                } catch (Exception ignored) {
+            if (contents != null) {
+                for (File fileOrFolder : contents) {
+                    if (fileOrFolder.isDirectory()) {
+                        try {
+                            LocalDate date = LocalDate.parse(fileOrFolder.getName(), DATE_FORMAT);
+                            if (startDate == null || date.isBefore(startDate)) startDate = date;
+                            if (endDate == null || date.isAfter(endDate)) endDate = date;
+                        } catch (Exception ignored) {}
+                    }
                 }
             }
 
@@ -66,13 +61,9 @@ public class CameraAnalysisService {
                     ? (int) (endDate.toEpochDay() - startDate.toEpochDay() + 1)
                     : 0;
 
-            // Get storage info
-            double totalSpaceGB = 0;
-            double usedSpaceGB = 0;
-            double freeSpaceGB = 0;
-
+            double totalSpaceGB = 0, usedSpaceGB = 0, freeSpaceGB = 0;
             try {
-                Path path = videoDir.toPath();
+                Path path = mediaDir.toPath();
                 FileStore store = Files.getFileStore(path);
                 totalSpaceGB = bytesToGB(store.getTotalSpace());
                 freeSpaceGB = bytesToGB(store.getUsableSpace());
@@ -81,37 +72,62 @@ public class CameraAnalysisService {
                 e.printStackTrace();
             }
 
-            double storageUsedGB = calculateFolderSizeGB(videoDir);
+            // Check if camera already exists in map
+            CameraReport existing = cameraReportMap.get(cameraId);
+            if (existing == null) {
+                existing = CameraReport.builder()
+                        .cameraId(cameraId)
+                        .startDate(startDate != null ? startDate.toString() : null)
+                        .endDate(endDate != null ? endDate.toString() : null)
+                        .recordingDays(recordingDays)
+                        .storageUsedGB(storageUsedGB)
+                        .dateIssue(0)
+                        .totalSpaceGB(totalSpaceGB)
+                        .usedSpaceGB(usedSpaceGB)
+                        .freeSpaceGB(freeSpaceGB)
+                        .mediaType("combined") // mark as combined
+                        .build();
+            } else {
+                // Merge existing with new data
+                existing.setStorageUsedGB(existing.getStorageUsedGB() + storageUsedGB);
 
-            CameraReport report = CameraReport.builder()
-                    .cameraId(cameraId)
-                    .startDate(startDate != null ? startDate.toString() : null)
-                    .endDate(endDate != null ? endDate.toString() : null)
-                    .recordingDays(recordingDays)
-                    .storageUsedGB(storageUsedGB)
-                    .dateIssue(0)
-                    .totalSpaceGB(totalSpaceGB)
-                    .usedSpaceGB(usedSpaceGB)
-                    .freeSpaceGB(freeSpaceGB)
-                    .build();
+                if (startDate != null) {
+                    LocalDate existingStart = existing.getStartDate() != null ? LocalDate.parse(existing.getStartDate()) : null;
+                    if (existingStart == null || startDate.isBefore(existingStart)) existing.setStartDate(startDate.toString());
+                }
 
-            System.out.println("Saving report: " + report);
+                if (endDate != null) {
+                    LocalDate existingEnd = existing.getEndDate() != null ? LocalDate.parse(existing.getEndDate()) : null;
+                    if (existingEnd == null || endDate.isAfter(existingEnd)) existing.setEndDate(endDate.toString());
+                }
+
+                // Recalculate recording days
+                if (existing.getStartDate() != null && existing.getEndDate() != null) {
+                    LocalDate s = LocalDate.parse(existing.getStartDate());
+                    LocalDate e = LocalDate.parse(existing.getEndDate());
+                    existing.setRecordingDays((int)(e.toEpochDay() - s.toEpochDay() + 1));
+                }
+            }
+
+            cameraReportMap.put(cameraId, existing);
+        }
+
+        // Save all combined reports
+        for (CameraReport report : cameraReportMap.values()) {
+            System.out.println("Saving combined report: " + report);
             cameraReportRepository.save(report);
         }
     }
 
-    /**
-     * Recursive method to find all "video" folders
-     */
-    private void findVideoFoldersRecursively(File folder, List<File> videoDirs) {
+    private void findMediaFoldersRecursively(File folder, List<File> mediaDirs) {
         File[] files = folder.listFiles(File::isDirectory);
         if (files == null) return;
 
         for (File subFolder : files) {
-            if ("video".equalsIgnoreCase(subFolder.getName())) {
-                videoDirs.add(subFolder);
+            if ("video".equalsIgnoreCase(subFolder.getName()) || "picture".equalsIgnoreCase(subFolder.getName())) {
+                mediaDirs.add(subFolder);
             } else {
-                findVideoFoldersRecursively(subFolder, videoDirs);
+                findMediaFoldersRecursively(subFolder, mediaDirs);
             }
         }
     }
@@ -129,11 +145,7 @@ public class CameraAnalysisService {
         File[] files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
-                if (file.isFile()) {
-                    length += file.length();
-                } else {
-                    length += calculateFolderSizeBytes(file);
-                }
+                length += file.isFile() ? file.length() : calculateFolderSizeBytes(file);
             }
         }
         return length;

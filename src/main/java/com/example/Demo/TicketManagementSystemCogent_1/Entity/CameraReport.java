@@ -50,6 +50,10 @@ public class CameraReport {
 	 @Column(name = "free_space_gb")
 	 private Double freeSpaceGB;
 	 
+	 @Column(name = "media_type")
+	 private String mediaType;
+
+	 
 	 @ManyToOne
 	 @JoinColumn(name = "site_master_id",referencedColumnName = "id") // This column will be the foreign key to SiteMasterData
 	 private SiteMasterData2 site;
