@@ -6,8 +6,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,7 +43,7 @@ public class CameraReportController {
 	 public String runAnalysis() {
 	     try {
 	         // VM path
-	         cameraAnalysisService.analyzeAndSave("Z:\\NAS~1");
+	         cameraAnalysisService.analyzeAndSave("D:\\NAS1");
 	         return "Analysis Done!";
 	     } catch (Exception e) {
 	         e.printStackTrace();
@@ -48,6 +51,14 @@ public class CameraReportController {
 	     }
 	 }
 
+	 @PostMapping("/analyze")
+	    public ResponseEntity<String> saveReports(@RequestBody List<CameraReport> reports) {
+	        if (reports == null || reports.isEmpty()) {
+	            return ResponseEntity.badRequest().body("No data received!");
+	        }
+	        cameraReportRepository.saveAll(reports);
+	        return ResponseEntity.ok("Saved " + reports.size() + " camera reports successfully!");
+	    }
 	    
 //	    @GetMapping("/storage-info")
 //	    public Map<String, Double> getStorageInfo() {
