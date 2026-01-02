@@ -1,5 +1,7 @@
 package com.example.Demo.TicketManagementSystemCogent_1.Entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -57,6 +59,10 @@ public class CameraReport {
 	 @ManyToOne
 	 @JoinColumn(name = "site_master_id",referencedColumnName = "id") // This column will be the foreign key to SiteMasterData
 	 private SiteMasterData2 site;
+	 
+	 @Column(nullable = false)
+	 private LocalDate createdAt = LocalDate.now();
+
 	 
 	 
 }

@@ -1,17 +1,22 @@
 package com.example.Demo.TicketManagementSystemCogent_1.Controller;
 
+import java.awt.print.Pageable;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Demo.TicketManagementSystemCogent_1.Entity.CameraReport;
@@ -38,6 +43,12 @@ public class CameraReportController {
 //	    public List<CameraReport> getAllReports() {
 //	        return cameraReportRepository.findAll();
 //	    }
+	 
+	 @GetMapping("/all")
+	 public List<CameraReport> getAllCameraReports() {
+	     return cameraReportRepository.findAll();
+	 }
+
 	    
 	 @GetMapping("/analyze")
 	 public String runAnalysis() {
@@ -59,6 +70,14 @@ public class CameraReportController {
 	        cameraReportRepository.saveAll(reports);
 	        return ResponseEntity.ok("Saved " + reports.size() + " camera reports successfully!");
 	    }
+	 
+	 @DeleteMapping("/delete-by-date")
+	 public String deleteByDate(@RequestParam String date) {
+	     LocalDate d = LocalDate.parse(date);
+	     int deleted = cameraReportRepository.deleteByCreatedAt(d);
+	     return "Deleted records = " + deleted;
+	 }
+
 	    
 //	    @GetMapping("/storage-info")
 //	    public Map<String, Double> getStorageInfo() {

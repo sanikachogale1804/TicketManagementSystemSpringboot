@@ -1,6 +1,12 @@
 package com.example.Demo.TicketManagementSystemCogent_1.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import com.example.Demo.TicketManagementSystemCogent_1.Entity.Ticket;
+import com.example.Demo.TicketManagementSystemCogent_1.Entity.User;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
@@ -13,37 +19,26 @@ import java.util.Properties;
 @Service
 public class EmailService {
 
-    public void sendmail() throws AddressException, MessagingException, IOException {
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
+	@Autowired
+    private JavaMailSender mailSender;
 
-        Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("cogenttech60@gmail.com", "");
-            }
-        });
+    public void sendTicketAssignedMail(Ticket ticket, User teamMember) {
+    	System.out.println("Sending email to " + teamMember.getUserEmail() + " for ticket " + ticket.getTicketId());
 
-        Message msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress("cogenttech60@gmail.com", false));
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse("cogenttech60@gmail.com"));
-        msg.setSubject("Tutorials point email");
-        msg.setContent("Tutorials point email", "text/html");
-        msg.setSentDate(new Date());
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("vmssupport@cogentsecurity.ai"); // SAME as spring.mail.username
+        message.setTo(teamMember.getUserEmail());
+        message.setSubject("New Ticket Assigned | Ticket ID: " + ticket.getTicketId());
 
-        MimeBodyPart messageBodyPart = new MimeBodyPart();
-        messageBodyPart.setContent("Tutorials point email", "text/html");
+        message.setText(
+            "Hello " + teamMember.getUserName() + ",\n\n" +
+            "A new ticket has been assigned to you.\n\n" +
+            "Ticket ID: " + ticket.getTicketId() + "\n" +
+            "Status: ASSIGNED\n\n" +
+            "Please login to the system.\n\n" +
+            "Regards,\nTicket Management System"
+        );
 
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(messageBodyPart);
-
-        MimeBodyPart attachPart = new MimeBodyPart();
-        attachPart.attachFile(new File("/var/tmp/image19.png")); // Make sure file exists
-        multipart.addBodyPart(attachPart);
-
-        msg.setContent(multipart);
-        Transport.send(msg);
+        mailSender.send(message);
     }
 }

@@ -91,6 +91,17 @@ public class JWTService {
         }
     }
 
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        Object roles = claims.get("roles");
+
+        if (roles instanceof String) {
+            return List.of((String) roles);
+        }
+        return (List<String>) roles;
+    }
+
+    
     // Extract username from the token
     public String extractUserName(String token) {
         return extractClaims(token, Claims::getSubject);
@@ -127,9 +138,6 @@ public class JWTService {
         return extractClaims(token, Claims::getExpiration);
     }
 
-    public List<String> extractRoles(String token) {
-        String rolesStr = extractClaims(token, claims -> (String) claims.get("roles"));  
-        return List.of(rolesStr.split(","));  // ✅ Comma-separated roles ko List me convert karo
-    }
+
 
 }
