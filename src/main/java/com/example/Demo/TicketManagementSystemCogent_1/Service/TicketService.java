@@ -1,6 +1,7 @@
 package com.example.Demo.TicketManagementSystemCogent_1.Service;
  
- import java.util.List;
+ import java.time.LocalDateTime;
+import java.util.List;
  import java.util.Optional;
  
  import org.springframework.beans.factory.annotation.Autowired;
@@ -54,5 +55,27 @@ import com.example.Demo.TicketManagementSystemCogent_1.Repository.UserRepository
 
          return savedTicket;
      }
- 	  
+ 	 
+ 	public Ticket closeTicket(int ticketId) {
+
+ 	    Ticket ticket = ticketRepository.findById(ticketId)
+ 	            .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+ 	    ticket.setStatus(Ticket.Status.CLOSED);
+ 	    ticket.setEndDate(LocalDateTime.now());
+
+ 	    Ticket savedTicket = ticketRepository.save(ticket);
+
+ 	    // ✅ CUSTOMER EMAIL
+ 	    User customer = savedTicket.getCustomer();
+ 	    if (customer != null && customer.getUserEmail() != null) {
+ 	        emailService.sendTicketClosedMail(
+ 	            customer.getUserEmail(),
+ 	            savedTicket
+ 	        );
+ 	    }
+
+ 	    return savedTicket;
+ 	}
+
  }

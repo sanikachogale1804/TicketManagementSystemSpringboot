@@ -21,21 +21,40 @@ public class CommentService {
 
 	    @Autowired
 	    private UserRepository userRepository;
-	    
+
+	    @Autowired
+	    private EmailService emailService;
+
 	    public Comment saveComment(Comment comment) {
-	        // Fetch the ticket and user based on ticketId and userId
-	        Ticket ticket = ticketRepository.findById(comment.getTicket().getTicketId())
-	                .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
-	        User user = userRepository.findById(comment.getUser().getUserId())
-	                .orElseThrow(() -> new RuntimeException("User not found"));
+	        Ticket ticket = ticketRepository.findById(
+	                comment.getTicket().getTicketId()
+	        ).orElseThrow(() -> new RuntimeException("Ticket not found"));
 
-	        // Set the ticket and user to the comment
+	        User user = userRepository.findById(
+	                comment.getUser().getUserId()
+	        ).orElseThrow(() -> new RuntimeException("User not found"));
+
 	        comment.setTicket(ticket);
 	        comment.setUser(user);
 
-	        // Save the comment
-	        return commentRepository.save(comment);
+	        Comment savedComment = commentRepository.save(comment);
+
+	        // ✅ IF ticket is CLOSED → mail customer
+	        if (ticket.getStatus() == Ticket.Status.CLOSED) {
+
+	            User customer = ticket.getCustomer(); // ✅ correct field
+
+	            if (customer != null && customer.getUserEmail() != null) {
+	                System.out.println("Sending CLOSED mail to " + customer.getUserEmail());
+	                emailService.sendTicketClosedMail(
+	                    customer.getUserEmail(),
+	                    ticket
+	                );
+	            }
+	        }
+
+	        return savedComment;
 	    }
 
 //	    public void addComment(Comment comment) {

@@ -41,4 +41,24 @@ public class EmailService {
 
         mailSender.send(message);
     }
+    
+    public void sendTicketClosedMail(String to, Ticket ticket) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Ticket Closed | Ticket ID: " + ticket.getTicketId());
+
+        message.setText(
+            "Hello,\n\n" +
+            "Your ticket has been successfully closed.\n\n" +
+            "Ticket Details:\n" +
+            "Ticket ID: " + ticket.getTicketId() + "\n" +
+            "Description: " + ticket.getDescription() + "\n" +
+            "Status: " + ticket.getStatus() + "\n\n" +
+            "Thank you,\nCogent Support Team"
+        );
+
+        mailSender.send(message);
+    }
+
 }
