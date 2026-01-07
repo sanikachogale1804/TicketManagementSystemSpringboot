@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,8 +17,9 @@ import com.example.Demo.TicketManagementSystemCogent_1.Service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.AddressException;
 
-@RestController
-@RequestMapping("/mail-test")
+//@RestController
+//@RequestMapping("/mail-test")
+@Service
 public class EmailController {
 	
 	 @Autowired
@@ -45,4 +47,24 @@ public class EmailController {
 
         mailSender.send(message);
 	    }
+	 
+//	 public void sendTicketClosedMail(String to, Ticket ticket) {
+//
+//		    SimpleMailMessage message = new SimpleMailMessage();
+//		    message.setFrom("vmssupport@cogentsecurity.ai"); // REQUIRED
+//		    message.setTo(to);
+//		    message.setSubject("Ticket Closed | Ticket ID: " + ticket.getTicketId());
+//
+//		    message.setText(
+//		        "Hello,\n\n" +
+//		        "Your ticket has been successfully closed.\n\n" +
+//		        "Ticket ID: " + ticket.getTicketId() + "\n" +
+//		        "Description: " + ticket.getDescription() + "\n" +
+//		        "Status: " + ticket.getStatus() + "\n\n" +
+//		        "Thank you,\nCogent Support Team"
+//		    );
+//
+//		    mailSender.send(message);
+//		}
+
 }

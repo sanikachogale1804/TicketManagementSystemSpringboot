@@ -5,6 +5,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.example.Demo.TicketManagementSystemCogent_1.Entity.Comment;
 import com.example.Demo.TicketManagementSystemCogent_1.Entity.Ticket;
 import com.example.Demo.TicketManagementSystemCogent_1.Entity.User;
 
@@ -60,5 +61,19 @@ public class EmailService {
 
         mailSender.send(message);
     }
+    
+//    public void sendCommentAddedMail(String to, Ticket ticket, Comment comment) {
+//
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        message.setTo(to);
+//        message.setSubject("New Comment on Ticket #" + ticket.getTicketId());
+//        message.setText(
+//            "A new comment has been added.\n\n" +
+//            "Comment: " + comment.getComment()
+//        );
+//
+//        mailSender.send(message);
+//    }
+
 
 }

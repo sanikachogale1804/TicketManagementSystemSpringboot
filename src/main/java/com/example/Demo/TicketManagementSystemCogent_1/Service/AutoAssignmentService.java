@@ -48,17 +48,16 @@ public class AutoAssignmentService {
     public Ticket autoAssign(Ticket ticket) {
 
         User bestMember = getBestTeamMember();
-
         ticket.setAssignedTo(bestMember);
         ticket.setStatus(Ticket.Status.IN_PROGRESS);
 
         Ticket savedTicket = ticketRepository.save(ticket);
 
-        // 📩 EMAIL HERE
         emailService.sendTicketAssignedMail(savedTicket, bestMember);
 
         return savedTicket;
     }
+
 
     private static class MemberLoad {
         private final User member;

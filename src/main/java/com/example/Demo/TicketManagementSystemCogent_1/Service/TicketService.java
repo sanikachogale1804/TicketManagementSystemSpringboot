@@ -1,81 +1,91 @@
 package com.example.Demo.TicketManagementSystemCogent_1.Service;
- 
- import java.time.LocalDateTime;
+
+import java.time.LocalDateTime;
 import java.util.List;
- import java.util.Optional;
- 
- import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import com.example.Demo.TicketManagementSystemCogent_1.Entity.Ticket;
 import com.example.Demo.TicketManagementSystemCogent_1.Entity.User;
 import com.example.Demo.TicketManagementSystemCogent_1.Repository.TicketRepository;
 import com.example.Demo.TicketManagementSystemCogent_1.Repository.UserRepository;
- 
- @Service
- public class TicketService {
- 	
- 	  @Autowired
- 	  private TicketRepository ticketRepository;
- 	  
- 	  @Autowired
- 	  private UserRepository userRepository;
- 	  
- 	  @Autowired
- 	  private EmailService emailService;
- 
- 	  public List<Ticket> getAllTickets() {
- 		  System.out.println("Fetching Tickets");
- 	     return ticketRepository.findAll(); 
- 	     
- 	  }
- 	  
- 	 public Ticket assignTicket(int ticketId, int userId) {
 
-         Ticket ticket = ticketRepository.findById(ticketId)
-                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
+@Service
+public class TicketService {
 
-         User teamMember = userRepository.findById(userId)
-                 .orElseThrow(() -> new RuntimeException("User not found"));
+    @Autowired
+    private TicketRepository ticketRepository;
 
-         if (teamMember.getRole() != User.Role.TEAMMEMBER) {
-             throw new RuntimeException("User is not a TEAM MEMBER");
-         }
+    @Autowired
+    private UserRepository userRepository;
 
-         ticket.setAssignedTo(teamMember);
-         ticket.setStatus(Ticket.Status.IN_PROGRESS); // ✅ ENUM FIX
+    @Autowired
+    private EmailService emailService;
 
-         Ticket savedTicket = ticketRepository.save(ticket);
+    // Fetch all tickets
+    public List<Ticket> getAllTickets() {
+        System.out.println("Fetching Tickets");
+        return ticketRepository.findAll();
+    }
 
-         // 📩 EMAIL
-         emailService.sendTicketAssignedMail(savedTicket, teamMember);
+    // Assign ticket manually
+    public Ticket assignTicket(int ticketId, int userId) {
 
-         return savedTicket;
-     }
- 	 
- 	public Ticket closeTicket(int ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
- 	    Ticket ticket = ticketRepository.findById(ticketId)
- 	            .orElseThrow(() -> new RuntimeException("Ticket not found"));
+        User teamMember = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
- 	    ticket.setStatus(Ticket.Status.CLOSED);
- 	    ticket.setEndDate(LocalDateTime.now());
+        if (teamMember.getRole() != User.Role.TEAMMEMBER) {
+            throw new RuntimeException("User is not a TEAM MEMBER");
+        }
 
- 	    Ticket savedTicket = ticketRepository.save(ticket);
+        ticket.setAssignedTo(teamMember);
+        ticket.setStatus(Ticket.Status.IN_PROGRESS);
 
- 	    // ✅ CUSTOMER EMAIL
- 	    User customer = savedTicket.getCustomer();
- 	    if (customer != null && customer.getUserEmail() != null) {
- 	        emailService.sendTicketClosedMail(
- 	            customer.getUserEmail(),
- 	            savedTicket
- 	        );
- 	    }
+        // Ensure customer is set
+        User customer = ticket.getCustomer();
+        if (customer == null) {
+            customer = userRepository.findByRole(User.Role.CUSTOMER)
+                    .stream()
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No customer found"));
+            ticket.setCustomer(customer);
+        }
 
- 	    return savedTicket;
- 	}
+        Ticket savedTicket = ticketRepository.save(ticket);
 
- }
+        // Send email to team member
+        emailService.sendTicketAssignedMail(savedTicket, teamMember);
+
+        return savedTicket;
+    }
+
+//    public Ticket closeTicket(int ticketId) {
+//
+//        Ticket ticket = ticketRepository.findById(ticketId)
+//                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+//
+//        ticket.setStatus(Ticket.Status.CLOSED);
+//        ticket.setEndDate(LocalDateTime.now());
+//
+//        Ticket savedTicket = ticketRepository.save(ticket);
+//
+//        User customer = savedTicket.getCustomer();
+//
+//        if (customer != null && customer.getUserEmail() != null) {
+//            System.out.println("📧 Closing ticket → sending mail to " + customer.getUserEmail());
+//
+//            emailService.sendTicketClosedMail(
+//                customer.getUserEmail(),
+//                savedTicket
+//            );
+//        }
+//
+//        return savedTicket;
+//    }
+
+
+}
