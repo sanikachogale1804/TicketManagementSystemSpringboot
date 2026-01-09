@@ -13,12 +13,12 @@ public class WebConfig implements WebMvcConfigurer {
             .allowedOrigins(
                 "http://localhost:3000",
                 "http://127.0.0.1:3000",
-                "http:45.115.186.228:3000",
+                "http://45.115.186.228:3000",
                 "http://192.168.1.91:3000"
             )
             .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-            .allowedHeaders("Authorization", "Content-Type", "Accept", "X-Requested-With")
+            .allowedHeaders("*")  // ← important! Authorization header included
             .allowCredentials(true)
-            .maxAge(3600); // Cache preflight response for 1 hour
+            .maxAge(3600);
     }
 }

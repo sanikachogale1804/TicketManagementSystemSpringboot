@@ -42,14 +42,19 @@ public class CommentController {
             @RequestBody Comment comment,
             @RequestParam(defaultValue = "false") boolean closeTicket
     ) {
+
+        System.out.println("✅ addComment called");
+        System.out.println("closeTicket = " + closeTicket);
+
         if (comment.getTicket() == null || comment.getUser() == null) {
             System.out.println("❌ ticket or user is null in request body!");
-            return ResponseEntity.badRequest().body("Ticket or User is missing in request body!");
+            return ResponseEntity.badRequest()
+                    .body("Ticket or User is missing in request body!");
         }
+
         Comment savedComment = commentService.saveComment(comment, closeTicket);
         return ResponseEntity.ok(savedComment);
     }
-
 
 
     
