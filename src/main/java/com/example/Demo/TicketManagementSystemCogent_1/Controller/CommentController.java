@@ -17,7 +17,9 @@ import com.example.Demo.TicketManagementSystemCogent_1.Repository.CommentReposit
 import com.example.Demo.TicketManagementSystemCogent_1.Repository.TicketRepository;
 import com.example.Demo.TicketManagementSystemCogent_1.Repository.UserRepository;
 import com.example.Demo.TicketManagementSystemCogent_1.Service.CommentService;
+import com.example.Demo.TicketManagementSystemCogent_1.Service.EmailService;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,28 +38,46 @@ public class CommentController {
     
     @Autowired
     private CommentRepository commentRepository;
+    
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/comments")
     public ResponseEntity<?> addComment(
-            @RequestBody Comment comment,
+            @RequestBody Map<String, Object> body,
             @RequestParam(defaultValue = "false") boolean closeTicket
     ) {
-
         System.out.println("✅ addComment called");
-        System.out.println("closeTicket = " + closeTicket);
+        System.out.println("Body = " + body);
 
-        if (comment.getTicket() == null || comment.getUser() == null) {
-            System.out.println("❌ ticket or user is null in request body!");
-            return ResponseEntity.badRequest()
-                    .body("Ticket or User is missing in request body!");
+        Integer ticketId = (Integer) ((Map<?, ?>) body.get("ticket")).get("ticketId");
+        Integer userId   = (Integer) ((Map<?, ?>) body.get("user")).get("userId");
+        String text      = (String) body.get("comment");
+
+        if (ticketId == null || userId == null) {
+            return ResponseEntity.badRequest().body("Ticket or User is missing!");
         }
 
+        Comment comment = new Comment();
+        comment.setComment(text);
+        comment.setCreatedAt(LocalDateTime.now());
+
+        Ticket ticket = new Ticket();
+        ticket.setTicketId(ticketId);
+
+        User user = new User();
+        user.setUserId(userId);
+
+        comment.setTicket(ticket);
+        comment.setUser(user);
+
+        // 🔥 THIS CALL TRIGGERS EMAIL
         Comment savedComment = commentService.saveComment(comment, closeTicket);
+
         return ResponseEntity.ok(savedComment);
     }
 
 
-    
     @PutMapping("/{commentId}/ticket")
     public ResponseEntity<?> assignTicketToComment(
             @PathVariable Integer commentId,

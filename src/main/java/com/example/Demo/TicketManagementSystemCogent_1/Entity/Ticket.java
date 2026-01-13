@@ -11,6 +11,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -25,13 +26,15 @@ public class Ticket {
     @Column(nullable = false)
     private int ticketId;
 
-    @ManyToOne
-    @JoinColumn(name="user_id",referencedColumnName = "userId", nullable = true)
-    private User customer;  // Customer who created the ticket
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "userId", nullable = false)
+    private User customer;
+
     
-    @ManyToOne
-    @JoinColumn(name = "assigned_to", referencedColumnName = "userId", nullable = true)
-    private User assignedTo;  // User to whom the ticket is assigned
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "assigned_to", referencedColumnName = "userId")
+    private User assignedTo;
+
     
     @Column(nullable = true)
     private String IASSPName;
@@ -69,6 +72,7 @@ public class Ticket {
     private LocalDateTime endDate;
     
     @OneToMany(mappedBy = "ticket")
+    @JsonIgnore
     private List<Comment> comments; 
 
     public enum Status {

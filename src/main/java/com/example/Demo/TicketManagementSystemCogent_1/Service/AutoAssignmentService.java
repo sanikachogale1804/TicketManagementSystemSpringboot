@@ -47,16 +47,21 @@ public class AutoAssignmentService {
 
     public Ticket autoAssign(Ticket ticket) {
 
+        System.out.println("Customer before assign: " + ticket.getCustomer()); // debug
+
         User bestMember = getBestTeamMember();
         ticket.setAssignedTo(bestMember);
         ticket.setStatus(Ticket.Status.IN_PROGRESS);
 
         Ticket savedTicket = ticketRepository.save(ticket);
 
+        System.out.println("Customer after save: " + savedTicket.getCustomer()); // debug
+
         emailService.sendTicketAssignedMail(savedTicket, bestMember);
 
         return savedTicket;
     }
+
 
 
     private static class MemberLoad {

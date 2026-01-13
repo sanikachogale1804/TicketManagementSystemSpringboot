@@ -14,7 +14,7 @@ import com.example.Demo.TicketManagementSystemCogent_1.Repository.UserRepository
 
 @Service
 public class CommentService {
-	
+
 	 @Autowired
 	    private CommentRepository commentRepository;
 
@@ -29,36 +29,39 @@ public class CommentService {
 
 	    public Comment saveComment(Comment comment, boolean closeTicket) {
 
-	        // 1️⃣ Fetch ticket
-	        Ticket ticket = ticketRepository.findById(comment.getTicket().getTicketId())
-	                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+	        // 🔹 1. Validate Ticket
+	        Integer ticketId = comment.getTicket().getTicketId();
 
-	        // 2️⃣ Fetch user
-	        User user = userRepository.findById(comment.getUser().getUserId())
-	                .orElseThrow(() -> new RuntimeException("User not found"));
+	        Ticket ticket = ticketRepository.findById(ticketId)
+	                .orElseThrow(() -> new RuntimeException("❌ Ticket not found with id: " + ticketId));
 
+	        // 🔹 2. Validate User
+	        Integer userId = comment.getUser().getUserId();
+
+	        User user = userRepository.findById(userId)
+	                .orElseThrow(() -> new RuntimeException("❌ User not found with id: " + userId));
+
+	        // 🔹 3. Attach managed entities
 	        comment.setTicket(ticket);
 	        comment.setUser(user);
+	        comment.setCreatedAt(LocalDateTime.now());
 
-	        // 3️⃣ Save comment
+	        // 🔹 4. Save comment
 	        Comment savedComment = commentRepository.save(comment);
 	        System.out.println("✅ Comment saved in DB");
 
-	        // 4️⃣ Close ticket if requested
+	        // 🔹 5. Close ticket if required
 	        if (closeTicket) {
 	            ticket.setStatus(Ticket.Status.CLOSED);
-	            ticket.setEndDate(LocalDateTime.now());
 	            ticketRepository.save(ticket);
+	            System.out.println("🟢 Ticket closed");
 
-	            System.out.println("🟢 Ticket closed: " + ticket.getTicketId());
+	            // 🔹 6. Send mail to CUSTOMER (not assigned user)
+	            if (ticket.getCustomer() != null) {
+	            	emailService.sendTicketClosedMail(ticket);
 
-	            // 5️⃣ Send mail to customer
-	            User customer = ticket.getCustomer();
-	            if (customer != null && customer.getUserEmail() != null) {
-	                System.out.println("📧 Sending CLOSED mail to " + customer.getUserEmail());
-	                emailService.sendTicketClosedMail(customer.getUserEmail(), ticket);
 	            } else {
-	                System.out.println("❌ Customer email missing!");
+	                System.out.println("❌ Customer is NULL — ticket data issue");
 	            }
 	        }
 

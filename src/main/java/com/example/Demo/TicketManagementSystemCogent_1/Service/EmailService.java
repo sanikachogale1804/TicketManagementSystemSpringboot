@@ -43,25 +43,48 @@ public class EmailService {
         mailSender.send(message);
     }
     
-    public void sendTicketClosedMail(String to, Ticket ticket) {
+    public void sendTicketClosedMail(Ticket ticket) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject("Ticket Closed | Ticket ID: " + ticket.getTicketId());
+        // 1️⃣ Send mail to CUSTOMER (ticket creator)
+        User customer = ticket.getCustomer();
+        if (customer != null) {
+            SimpleMailMessage customerMail = new SimpleMailMessage();
+            customerMail.setFrom("vmssupport@cogentsecurity.ai");
+            customerMail.setTo(customer.getUserEmail());
+            customerMail.setSubject("Ticket Closed | Ticket ID: " + ticket.getTicketId());
+            customerMail.setText(
+                    "Hello " + customer.getUserName() + ",\n\n" +
+                    "Your ticket has been successfully closed.\n\n" +
+                    "Ticket ID: " + ticket.getTicketId() + "\n" +
+                    "Description: " + ticket.getDescription() + "\n" +
+                    "Status: " + ticket.getStatus() + "\n\n" +
+                    "Regards,\nCogent Support Team"
+            );
+            mailSender.send(customerMail);
+            System.out.println("📧 Closed mail sent to CUSTOMER: " + customer.getUserEmail());
+        } else {
+            System.out.println("❌ Customer is NULL — ticket data issue");
+        }
 
-        message.setText(
-                "Hello,\n\n" +
-                        "Your ticket has been successfully closed.\n\n" +
-                        "Ticket Details:\n" +
-                        "Ticket ID: " + ticket.getTicketId() + "\n" +
-                        "Description: " + ticket.getDescription() + "\n" +
-                        "Status: " + ticket.getStatus() + "\n\n" +
-                        "Thank you,\nCogent Support Team"
-        );
-
-        mailSender.send(message);
-        System.out.println("✅ Closed mail sent to: " + to);
+        // 2️⃣ OPTIONAL: Send mail to ASSIGNED TEAM MEMBER
+        User assigned = ticket.getAssignedTo();
+        if (assigned != null) {
+            SimpleMailMessage teamMail = new SimpleMailMessage();
+            teamMail.setFrom("vmssupport@cogentsecurity.ai");
+            teamMail.setTo(assigned.getUserEmail());
+            teamMail.setSubject("Ticket Closed | Ticket ID: " + ticket.getTicketId());
+            teamMail.setText(
+                    "Hello " + assigned.getUserName() + ",\n\n" +
+                    "The assigned ticket has been closed.\n\n" +
+                    "Ticket ID: " + ticket.getTicketId() + "\n\n" +
+                    "Regards,\nCogent Support Team"
+            );
+            mailSender.send(teamMail);
+            System.out.println("📧 Closed mail sent to ASSIGNED USER: " + assigned.getUserEmail());
+        }
     }
+
+
 //    public void sendCommentAddedMail(String to, Ticket ticket, Comment comment) {
 //
 //        SimpleMailMessage message = new SimpleMailMessage();

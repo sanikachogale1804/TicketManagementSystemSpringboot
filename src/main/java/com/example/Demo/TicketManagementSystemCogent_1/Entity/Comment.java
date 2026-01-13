@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -29,8 +30,8 @@ public class Comment {
 	private int commentId;
 	
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "ticketId", name = "ticket_id")
-	@JsonIgnoreProperties("comments") // prevents loop
+	@JoinColumn(name = "ticket_id")
+	@JsonIgnore
 	private Ticket ticket;
 	
 	@JsonProperty("ticketId")
@@ -39,8 +40,8 @@ public class Comment {
 	}
 	  
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "userId", name = "user_id")
-	@JsonIgnoreProperties("comments") // prevents loop
+	@JoinColumn(name = "user_id")
+	@JsonIgnore
 	private User user;
 	
 	@Column( columnDefinition = "TEXT")
