@@ -26,13 +26,17 @@ public class Ticket {
     @Column(nullable = false)
     private int ticketId;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "user_id", referencedColumnName = "userId", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(
+        name = "user_id",
+        referencedColumnName = "userId",
+        nullable = true   // ⭐ MUST BE TRUE
+    )
     private User customer;
 
-    
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "assigned_to", referencedColumnName = "userId")
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "assigned_to", referencedColumnName = "userId", nullable = true)
     private User assignedTo;
 
     

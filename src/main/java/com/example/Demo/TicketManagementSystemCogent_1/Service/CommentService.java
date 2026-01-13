@@ -15,58 +15,59 @@ import com.example.Demo.TicketManagementSystemCogent_1.Repository.UserRepository
 @Service
 public class CommentService {
 
-	 @Autowired
-	    private CommentRepository commentRepository;
+	@Autowired
+    private CommentRepository commentRepository;
 
-	    @Autowired
-	    private TicketRepository ticketRepository;
+    @Autowired
+    private TicketRepository ticketRepository;
 
-	    @Autowired
-	    private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	    @Autowired
-	    private EmailService emailService;
+    @Autowired
+    private EmailService emailService;
 
-	    public Comment saveComment(Comment comment, boolean closeTicket) {
+    public Comment saveComment(Comment comment, boolean closeTicket) {
 
-	        // 🔹 1. Validate Ticket
-	        Integer ticketId = comment.getTicket().getTicketId();
+    	Integer ticketId = comment.getTicket().getTicketId();
+    	System.out.println("🎯 Incoming ticketId = " + ticketId); 
+        // 1️⃣ Fetch FULL ticket
+        Ticket ticket = ticketRepository.findById(comment.getTicket().getTicketId())
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
-	        Ticket ticket = ticketRepository.findById(ticketId)
-	                .orElseThrow(() -> new RuntimeException("❌ Ticket not found with id: " + ticketId));
+        // 2️⃣ Fetch FULL user
+        User user = userRepository.findById(comment.getUser().getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-	        // 🔹 2. Validate User
-	        Integer userId = comment.getUser().getUserId();
+        comment.setTicket(ticket);
+        comment.setUser(user);
 
-	        User user = userRepository.findById(userId)
-	                .orElseThrow(() -> new RuntimeException("❌ User not found with id: " + userId));
+        // 3️⃣ Save comment
+        Comment savedComment = commentRepository.save(comment);
+        System.out.println("✅ Comment saved in DB");
 
-	        // 🔹 3. Attach managed entities
-	        comment.setTicket(ticket);
-	        comment.setUser(user);
-	        comment.setCreatedAt(LocalDateTime.now());
+        // 4️⃣ Send mail to CUSTOMER
+     // 4️⃣ Send mail to CUSTOMER
+        User customer = ticket.getCustomer();
 
-	        // 🔹 4. Save comment
-	        Comment savedComment = commentRepository.save(comment);
-	        System.out.println("✅ Comment saved in DB");
+        if (customer != null && customer.getUserEmail() != null) {
+            emailService.sendTicketClosedMail(ticket);
+            System.out.println("📧 Mail sent to customer");
+        } else {
+            System.out.println("❌ Customer or email is NULL");
+        }
 
-	        // 🔹 5. Close ticket if required
-	        if (closeTicket) {
-	            ticket.setStatus(Ticket.Status.CLOSED);
-	            ticketRepository.save(ticket);
-	            System.out.println("🟢 Ticket closed");
 
-	            // 🔹 6. Send mail to CUSTOMER (not assigned user)
-	            if (ticket.getCustomer() != null) {
-	            	emailService.sendTicketClosedMail(ticket);
+        // 5️⃣ Close ticket if requested
+        if (closeTicket) {
+            ticket.setStatus(Ticket.Status.CLOSED);
+            ticket.setEndDate(LocalDateTime.now());
+            ticketRepository.save(ticket);
+            System.out.println("🟢 Ticket closed");
+        }
 
-	            } else {
-	                System.out.println("❌ Customer is NULL — ticket data issue");
-	            }
-	        }
-
-	        return savedComment;
-	    }
+        return savedComment;
+    }
 
 
 //	    public void addComment(Comment comment) {
