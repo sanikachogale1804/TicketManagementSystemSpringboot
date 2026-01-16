@@ -1,6 +1,7 @@
 package com.example.Demo.TicketManagementSystemCogent_1.Controller;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Demo.TicketManagementSystemCogent_1.Entity.Ticket;
 import com.example.Demo.TicketManagementSystemCogent_1.Entity.User;
+import com.example.Demo.TicketManagementSystemCogent_1.Repository.TicketRepository;
+import com.example.Demo.TicketManagementSystemCogent_1.Repository.UserRepository;
 import com.example.Demo.TicketManagementSystemCogent_1.Service.AutoAssignmentService;
 import com.example.Demo.TicketManagementSystemCogent_1.Service.TicketService;
 
@@ -39,18 +43,42 @@ public class TicketController {
 	 @Autowired
 	 private AutoAssignmentService autoAssignmentService;
 	 
+	 @Autowired
+	 private TicketRepository ticketRepository;
+	 
+	 @Autowired
+	 private UserRepository userRepository;
+	 
 	 @GetMapping
 	 public List<Ticket> getAllTickets() {
 	     return ticketService.getAllTickets();
 	 }
 	 
-	 @PostMapping
-	 public Ticket createTicket(@RequestBody Ticket ticket,
-	                            @AuthenticationPrincipal User user) {
+	 @PostMapping("/createTicket")
+	 public Ticket createTicket(@RequestParam int customerId,
+	                            @RequestParam(required = false) String description,
+	                            @RequestParam(required = false) String district) {
 
-	     ticket.setCustomer(user);
-	     return autoAssignmentService.autoAssign(ticket);
+	     // 1️⃣ Fetch the managed customer
+	     User customer = userRepository.findById(customerId)
+	             .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+	     // 2️⃣ Create a new ticket object
+	     Ticket ticket = new Ticket();
+	     ticket.setCustomer(customer);
+	     ticket.setDescription(description);
+	     ticket.setDistrict(district);
+	     ticket.setStatus(Ticket.Status.OPEN); // set default status
+	     ticket.setStartDate(LocalDateTime.now());
+
+	     // 3️⃣ Save ticket
+	     Ticket savedTicket = ticketRepository.save(ticket);
+
+	     System.out.println("Customer after save: " + savedTicket.getCustomer());
+
+	     return savedTicket;
 	 }
+
 
 	 
 //	 @PutMapping("/close/{ticketId}")
