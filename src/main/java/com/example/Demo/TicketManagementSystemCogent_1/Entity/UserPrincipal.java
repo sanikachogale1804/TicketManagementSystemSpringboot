@@ -11,6 +11,10 @@ public class UserPrincipal implements UserDetails {
     
     private User user;
     
+    public User getUser() {
+        return this.user;
+    }
+    
     public UserPrincipal(User user) {
         this.user = user;
     }

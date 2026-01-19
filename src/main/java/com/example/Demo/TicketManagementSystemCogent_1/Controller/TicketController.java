@@ -3,6 +3,7 @@ package com.example.Demo.TicketManagementSystemCogent_1.Controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +22,7 @@ import com.example.Demo.TicketManagementSystemCogent_1.Entity.User;
 import com.example.Demo.TicketManagementSystemCogent_1.Repository.TicketRepository;
 import com.example.Demo.TicketManagementSystemCogent_1.Repository.UserRepository;
 import com.example.Demo.TicketManagementSystemCogent_1.Service.AutoAssignmentService;
+import com.example.Demo.TicketManagementSystemCogent_1.Service.CommentService;
 import com.example.Demo.TicketManagementSystemCogent_1.Service.TicketService;
 
 
@@ -49,38 +51,21 @@ public class TicketController {
 	 @Autowired
 	 private UserRepository userRepository;
 	 
+	 @Autowired
+	 private CommentService commentService;
+
+	 
 	 @GetMapping
 	 public List<Ticket> getAllTickets() {
 	     return ticketService.getAllTickets();
 	 }
 	 
-	 @PostMapping("/createTicket")
-	 public Ticket createTicket(@RequestParam int customerId,
-	                            @RequestParam(required = false) String description,
-	                            @RequestParam(required = false) String district) {
-
-	     // 1️⃣ Fetch the managed customer
-	     User customer = userRepository.findById(customerId)
-	             .orElseThrow(() -> new RuntimeException("Customer not found"));
-
-	     // 2️⃣ Create a new ticket object
-	     Ticket ticket = new Ticket();
-	     ticket.setCustomer(customer);
-	     ticket.setDescription(description);
-	     ticket.setDistrict(district);
-	     ticket.setStatus(Ticket.Status.OPEN); // set default status
-	     ticket.setStartDate(LocalDateTime.now());
-
-	     // 3️⃣ Save ticket
-	     Ticket savedTicket = ticketRepository.save(ticket);
-
-	     System.out.println("Customer after save: " + savedTicket.getCustomer());
-
-	     return savedTicket;
+	 @PostMapping
+	 public Ticket createTicket(@RequestBody Ticket ticket)
+	 {
+		 return autoAssignmentService.autoAssign(ticket);
 	 }
 
-
-	 
 //	 @PutMapping("/close/{ticketId}")
 //	 public Ticket closeTicket(@PathVariable int ticketId) {
 //	     return ticketService.closeTicket(ticketId);

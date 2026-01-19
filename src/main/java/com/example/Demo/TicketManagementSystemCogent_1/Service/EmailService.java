@@ -23,25 +23,25 @@ public class EmailService {
 	@Autowired
     private JavaMailSender mailSender;
 
-    public void sendTicketAssignedMail(Ticket ticket, User teamMember) {
-    	System.out.println("Sending email to " + teamMember.getUserEmail() + " for ticket " + ticket.getTicketId());
+	 public void sendTicketAssignedMail(Ticket ticket, User teamMember) {
+	    	System.out.println("Sending email to " + teamMember.getUserEmail() + " for ticket " + ticket.getTicketId());
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("vmssupport@cogentsecurity.ai"); // SAME as spring.mail.username
-        message.setTo(teamMember.getUserEmail());
-        message.setSubject("New Ticket Assigned | Ticket ID: " + ticket.getTicketId());
+	        SimpleMailMessage message = new SimpleMailMessage();
+	        message.setFrom("sanika@cogentsecurity.ai"); // SAME as spring.mail.username
+	        message.setTo(teamMember.getUserEmail());
+	        message.setSubject("New Ticket Assigned | Ticket ID: " + ticket.getTicketId());
 
-        message.setText(
-            "Hello " + teamMember.getUserName() + ",\n\n" +
-            "A new ticket has been assigned to you.\n\n" +
-            "Ticket ID: " + ticket.getTicketId() + "\n" +
-            "Status: ASSIGNED\n\n" +
-            "Please login to the system.\n\n" +
-            "Regards,\nTicket Management System"
-        );
+	        message.setText(
+	            "Hello " + teamMember.getUserName() + ",\n\n" +
+	            "A new ticket has been assigned to you.\n\n" +
+	            "Ticket ID: " + ticket.getTicketId() + "\n" +
+	            "Status: ASSIGNED\n\n" +
+	            "Please login to the system.\n\n" +
+	            "Regards,\nTicket Management System"
+	        );
 
-        mailSender.send(message);
-    }
+	        mailSender.send(message);
+	    }
     
     public void sendTicketClosedMail(Ticket ticket) {
 
@@ -49,7 +49,7 @@ public class EmailService {
         User customer = ticket.getCustomer();
         if (customer != null) {
             SimpleMailMessage customerMail = new SimpleMailMessage();
-            customerMail.setFrom("vmssupport@cogentsecurity.ai");
+            customerMail.setFrom("sanika@cogentsecurity.ai");
             customerMail.setTo(customer.getUserEmail());
             customerMail.setSubject("Ticket Closed | Ticket ID: " + ticket.getTicketId());
             customerMail.setText(
@@ -70,7 +70,7 @@ public class EmailService {
         User assigned = ticket.getAssignedTo();
         if (assigned != null) {
             SimpleMailMessage teamMail = new SimpleMailMessage();
-            teamMail.setFrom("vmssupport@cogentsecurity.ai");
+            teamMail.setFrom("sanika@cogentsecurity.ai");
             teamMail.setTo(assigned.getUserEmail());
             teamMail.setSubject("Ticket Closed | Ticket ID: " + ticket.getTicketId());
             teamMail.setText(

@@ -28,41 +28,27 @@ public class CommentService {
     private EmailService emailService;
 
     public Comment saveComment(Comment comment, boolean closeTicket) {
+    	Ticket ticket = ticketRepository.findById(
+                comment.getTicket().getTicketId()
+        ).orElseThrow(() -> new RuntimeException("Ticket not found"));
 
-        // 1️⃣ Fetch ticket from DB (includes customer)
-        Ticket ticket = ticketRepository.findById(comment.getTicket().getTicketId())
-                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+        User user = userRepository.findById(
+                comment.getUser().getUserId()
+        ).orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 2️⃣ Fetch user (team member adding comment)
-        User user = userRepository.findById(comment.getUser().getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // 3️⃣ Link comment to ticket and user
-        comment.setTicket(ticket);
-        comment.setUser(user);
-
-        // 4️⃣ Save comment
         Comment savedComment = commentRepository.save(comment);
-        System.out.println("✅ Comment saved in DB");
 
-        // 5️⃣ Close ticket if requested
-        if (closeTicket) {
-            ticket.setStatus(Ticket.Status.CLOSED);
-            ticket.setEndDate(LocalDateTime.now());
+        // ✅ IF ticket is CLOSED → mail customer
+        if (ticket.getStatus() == Ticket.Status.CLOSED) {
 
-            // ⚠️ Do NOT overwrite customer, assignedTo, or other fields from incoming ticket object
-            ticketRepository.save(ticket);  
-            System.out.println("🟢 Ticket closed");
+            User customer = ticket.getCustomer();
+
+            if (customer != null && customer.getUserEmail() != null) {
+                System.out.println("Sending CLOSED mail to " + customer.getUserEmail());
+                emailService.sendTicketClosedMail(ticket);
+            }
         }
 
-        // 6️⃣ Send mail to customer
-        User customer = ticket.getCustomer();  // ✅ this should now work
-        if (customer != null && customer.getUserEmail() != null) {
-            emailService.sendTicketClosedMail(ticket);
-            System.out.println("📧 Mail sent to customer");
-        } else {
-            System.out.println("❌ Customer or email is NULL");
-        }
 
         return savedComment;
     }

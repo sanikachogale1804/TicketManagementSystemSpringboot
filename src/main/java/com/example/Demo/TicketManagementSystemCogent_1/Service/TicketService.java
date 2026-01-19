@@ -43,21 +43,11 @@ public class TicketService {
         }
 
         ticket.setAssignedTo(teamMember);
-        ticket.setStatus(Ticket.Status.IN_PROGRESS);
-
-        // Ensure customer is set
-        User customer = ticket.getCustomer();
-        if (customer == null) {
-            customer = userRepository.findByRole(User.Role.CUSTOMER)
-                    .stream()
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("No customer found"));
-            ticket.setCustomer(customer);
-        }
+        ticket.setStatus(Ticket.Status.IN_PROGRESS); // ✅ ENUM FIX
 
         Ticket savedTicket = ticketRepository.save(ticket);
 
-        // Send email to team member
+        // 📩 EMAIL
         emailService.sendTicketAssignedMail(savedTicket, teamMember);
 
         return savedTicket;
